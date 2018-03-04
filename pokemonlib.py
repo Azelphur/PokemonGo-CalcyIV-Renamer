@@ -57,11 +57,11 @@ class PokemonGo(object):
 
     def get_x(self, percent):
         width, height = self.get_resolution()
-        return int((width / 100) * percent)
+        return int((width / 100.0) * percent)
 
     def get_y(self, percent):
         width, height = self.get_resolution()
-        return int((height / 100) * percent)
+        return int((height / 100.0) * percent)
 
     def tap(self, x, y, sleep):
         self.run(["adb", "-s", self.device_id, "shell", "input", "tap", self.get_x(x), self.get_y(y)])
