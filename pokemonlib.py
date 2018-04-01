@@ -94,11 +94,31 @@ class PokemonGo(object):
         img_rgb = rgb_image.getpixel((self.get_x(x), self.get_y(y)))
         logger.debug("Checking pixel. %dx%d image is %s, want %s. Returning %s", self.get_x(x), self.get_y(y), img_rgb, rgb, img_rgb == rgb)
         return img_rgb == rgb
+
+    def check_calcy_iv_img(self, rgb_image):
+        x1 = self.get_x(22.22)
+        y1 = self.get_y(82.29)
+        x2 = self.get_x(77.78)
+        y2 = self.get_y(87.50)
+        search_colors = [
+            (0xA9, 0xA9, 0xA9),
+            (0xB4, 0xB4, 0xB4),
+            (0x64, 0x64, 0x64),
+            (0x66, 0x66, 0x66)
+        ]
+        for x in range(x1, x2):
+            for y in range(y1, y2):
+                img_rgb = rgb_image.getpixel((x, y))
+                if img_rgb in search_colors:
+                    search_colors.remove(img_rgb)
+                    if search_colors == []:
+                        return True
+        return False
         
     def check_calcy_iv(self):
         image = self.screencap()
         rgb_image = image.convert('RGB')
-        if self.check_pixel(rgb_image, 50, 89.28, (0x44, 0x69, 0x6C)) is False: # Calcy IV Failed?
+        if self.check_calcy_iv_img(rgb_image) is False: # Calcy IV Failed?
             if self.check_pixel(rgb_image, 4.62, 6.77, (0xF0, 0x4B, 0x5F)) is True:
                 raise RedBarError
             else:
