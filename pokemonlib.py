@@ -31,6 +31,7 @@ class PokemonGo(object):
             self.device_id = devices[0]
         else:
             self.device_id = device_id
+        self.use_fallback_screenshots = False
         self.resolution = None
 
     def run(self, args):
@@ -41,8 +42,16 @@ class PokemonGo(object):
         return (p.returncode, stdout, stderr)
 
     def screencap(self):
-        return_code, stdout, stderr = self.run(["adb", "-s", self.device_id, "shell", "screencap", "-p"])
-        image = Image.open(BytesIO(stdout))
+        if not self.use_fallback_screenshots:
+            return_code, stdout, stderr = self.run(["adb", "-s", self.device_id, "shell", "screencap", "-p"])
+            try:
+                image = Image.open(BytesIO(stdout))
+            except OSError:
+                logger.debug("Screenshot failed, using fallback method")
+                self.use_fallback_screenshots = True
+        return_code, stdout, stderr = self.run(["adb", "-s", self.device_id, "shell", "screencap", "-p", "/sdcard/screen.png"])
+        return_code, stdout, stderr = self.run(["adb", "-s", self.device_id, "pull", "/sdcard/screen.png", "."])
+        image = Image.open("screen.png")
         return image
 
     def determine_resolution(self):
