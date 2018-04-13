@@ -17,6 +17,12 @@ parser.add_argument('--wait-after-error', action='store_const', const=True, defa
 parser.add_argument('--max-retries', type=int, default=5, help="Maximum retries, set to 0 for unlimited")
 parser.add_argument('--sleep_short', type=float, default=0.7)
 parser.add_argument('--sleep_long', type=float, default=1.5)
+parser.add_argument('--ok_button_x', type=float, default=86.46)
+parser.add_argument('--ok_button_y', type=float, default=57.08)
+parser.add_argument('--edit_line_x', type=float, default=6.67)
+parser.add_argument('--edit_line_y', type=float, default=57.29)
+parser.add_argument('--paste_button_x', type=float, default=11.38)
+parser.add_argument('--paste_button_y', type=float, default=64.53)
 
 args = parser.parse_args()
 
@@ -45,8 +51,9 @@ while True:
         p.tap(50.74, 47.97, args.sleep_short) # Rename
         if args.nopaste:
             p.tap(92.59, 88.54, args.sleep_short) # Press in the edit box
-            p.swipe(6.67, 57.29, 6.67, 57.29, SLEEP_SHORT, 600) # Use swipe to simulate a long press to bring up copy/paste dialog
-            p.tap(24.63, 50.42, args.sleep_short) # Press paste
+            p.swipe(args.edit_line_x, args.edit_line_y, args.edit_line_x, args.edit_line_y, args.sleep_short, 600) # Use swipe to simulate a long press to bring up copy/paste dialog
+            #p.tap(24.63, 50.42, args.sleep_short) # Press paste
+            p.tap(args.paste_button_x, args.paste_button_y, args.sleep_short) # Press paste
         else:
             p.key(279, args.sleep_short) # Paste into rename
         p.tap(86.48, 57.08, args.sleep_short) # Press OK on edit line
