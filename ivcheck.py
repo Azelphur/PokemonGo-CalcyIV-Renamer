@@ -15,6 +15,7 @@ parser.add_argument('--no-rename', action='store_const', const=True, default=Fal
 parser.add_argument('--wait-after-error', action='store_const', const=True, default=False,
                     help="Upon calcy IV error, wait for user input")
 parser.add_argument('--max-retries', type=int, default=5, help="Maximum retries, set to 0 for unlimited")
+parser.add_argument('--stop_after', type=int, default=None, help="Stop after this many pokemon")
 parser.add_argument('--sleep_short', type=float, default=0.7)
 parser.add_argument('--sleep_long', type=float, default=1.5)
 parser.add_argument('--ok_button_x', type=float, default=86.46)
@@ -27,7 +28,10 @@ parser.add_argument('--paste_button_y', type=float, default=64.53)
 args = parser.parse_args()
 
 p = pokemonlib.PokemonGo(args.device_id)
+n = 0
 while True:
+    if args.stop_after is not None and n > args.stop_after:
+        break
     p.tap(7.40, 46.87, args.sleep_long) # Calcy IV
     try:
         p.check_calcy_iv()
@@ -42,6 +46,7 @@ while True:
         skip_count = skip_count + 1
         if skip_count > args.max_retries and args.max_retries != 0:
             print("CalcyIVError 5 times in a row, skipping to next pokemon")
+            n = n + 1
             p.swipe(97.22, 70.31, 4.62, 70.31, args.sleep_short)
             skip_count = 0
         continue
@@ -58,4 +63,5 @@ while True:
             p.key(279, args.sleep_short) # Paste into rename
         p.tap(86.48, 57.08, args.sleep_short) # Press OK on edit line
         p.tap(51.48, 55.47, args.sleep_long) # Press OK on Pokemon go rename dialog
+    n = n + 1
     p.swipe(97.22, 70.31, 4.63, 70.31, args.sleep_short) # Swipe to next pokemon
