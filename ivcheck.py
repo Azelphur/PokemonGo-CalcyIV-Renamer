@@ -10,11 +10,11 @@ parser.add_argument('--adb_path', type=str, default="adb",
                     help="If adb isn't on your PATH, use this option to specify the location of adb")
 parser.add_argument('--nopaste', action='store_const', const=True, default=False,
                     help="Use this switch if your device doesn't support the paste key, for example if you're using a Samsung")
-parser.add_argument('--no-rename', action='store_const', const=True, default=False,
+parser.add_argument('--no_rename', action='store_const', const=True, default=False,
                     help="Don't rename, useful for just loading every pokemon into calcy IV history for CSV export.")
-parser.add_argument('--wait-after-error', action='store_const', const=True, default=False,
+parser.add_argument('--wait_after_error', action='store_const', const=True, default=False,
                     help="Upon calcy IV error, wait for user input")
-parser.add_argument('--max-retries', type=int, default=5, help="Maximum retries, set to 0 for unlimited")
+parser.add_argument('--max_retries', type=int, default=5, help="Maximum retries, set to 0 for unlimited")
 parser.add_argument('--stop_after', type=int, default=None, help="Stop after this many pokemon")
 parser.add_argument('--sleep_short', type=float, default=0.7)
 parser.add_argument('--sleep_long', type=float, default=1.5)
