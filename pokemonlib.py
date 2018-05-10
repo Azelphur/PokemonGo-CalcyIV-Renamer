@@ -45,7 +45,7 @@ class PokemonGo(object):
         if not self.use_fallback_screenshots:
             return_code, stdout, stderr = self.run(["adb", "-s", self.device_id, "shell", "screencap", "-p"])
             try:
-                image = Image.open(BytesIO(stdout))
+                return Image.open(BytesIO(stdout))
             except OSError:
                 logger.debug("Screenshot failed, using fallback method")
                 self.use_fallback_screenshots = True
@@ -56,8 +56,21 @@ class PokemonGo(object):
 
     def determine_resolution(self):
         image = self.screencap()
-        logger.info("Determined device resolution as %s", image.size)
-        return image.size
+        # Try and detect software nav bar
+        rgb_image = image.convert('RGB')
+        i = 1
+        bar_color = rgb_image.getpixel((0, image.size[1]-i))
+        color = bar_color
+        while color == bar_color and i < image.size[0]:
+            i = i + 1
+            color = rgb_image.getpixel((0, image.size[1]-i))
+        # If we have the same color covering 5-10% of the total height, it's probably a nav bar
+        if i > image.size[1] / 20 and i < image.size[1] / 10:
+            size = (image.size[0], image.size[1] - i)
+        else:
+            size = image.size
+        logger.info("Determined device resolution as %s", size)
+        return size
 
     def get_resolution(self):
         if self.resolution is None:
