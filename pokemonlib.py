@@ -43,10 +43,10 @@ class PokemonGo(object):
 
     def screencap(self):
         if not self.use_fallback_screenshots:
-            return_code, stdout, stderr = self.run(["adb", "-s", self.device_id, "shell", "screencap", "-p"])
+            return_code, stdout, stderr = self.run(["adb", "-s", self.device_id, "exec-out", "screencap", "-p"])
             try:
                 return Image.open(BytesIO(stdout))
-            except OSError:
+            except (OSError, IOError):
                 logger.debug("Screenshot failed, using fallback method")
                 self.use_fallback_screenshots = True
         return_code, stdout, stderr = self.run(["adb", "-s", self.device_id, "shell", "screencap", "-p", "/sdcard/screen.png"])
