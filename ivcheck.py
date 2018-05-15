@@ -24,7 +24,6 @@ parser.add_argument('--edit_line_x', type=float, default=6.67)
 parser.add_argument('--edit_line_y', type=float, default=57.29)
 parser.add_argument('--paste_button_x', type=float, default=11.38)
 parser.add_argument('--paste_button_y', type=float, default=64.53)
-
 args = parser.parse_args()
 
 p = pokemonlib.PokemonGo(args.device_id)
