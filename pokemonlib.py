@@ -69,7 +69,12 @@ class PokemonGo(object):
             size = (image.size[0], image.size[1] - i)
         else:
             size = image.size
-        logger.info("Determined device resolution as %s", size)
+
+        size = (1080, 2160)
+        aspect_ratio = size[1] / size[0]
+        if aspect_ratio != 1.7777777777777777:
+            size = (size[0], min(size[1], size[0] * 1.7777777777777777))
+        logger.info("Determined device resolution as %s, aspect ratio is %s", size, aspect_ratio)
         return size
 
     def get_resolution(self):
