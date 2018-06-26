@@ -38,9 +38,7 @@ args = parser.parse_args()
 
 p = pokemonlib.PokemonGo(args.device_id)
 n = 0
-while True:
-    if args.stop_after is not None and n > args.stop_after:
-        break
+while args.stop_after is None or n < args.stop_after:
     p.tap(7.40, 46.87, args.sleep_long) # Calcy IV
     try:
         p.check_calcy_iv()
