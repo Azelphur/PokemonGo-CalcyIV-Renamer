@@ -80,7 +80,6 @@ while args.stop_after is None or n < args.stop_after:
         if args.nopaste:
             p.tap(args.edit_box_x, args.edit_box_y, args.sleep_short) # Press in the edit box
             p.swipe(args.edit_line_x, args.edit_line_y, args.edit_line_x, args.edit_line_y, args.sleep_short, 600) # Use swipe to simulate a long press to bring up copy/paste dialog
-            #p.tap(24.63, 50.42, args.sleep_short) # Press paste
             p.tap(args.paste_button_x, args.paste_button_y, args.sleep_short) # Press paste
         else:
             p.key(279, args.sleep_short) # Paste into rename
