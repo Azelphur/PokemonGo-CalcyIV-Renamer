@@ -153,3 +153,7 @@ class PokemonGo(object):
             device_id, name = line.split('\t')
             devices.append(device_id)
         return devices
+
+    def send_intent(self, intent, package, sleep):
+        return_code, stdout, stderr = self.run(["adb", "-s", self.device_id, "shell", "am broadcast -a {} -n {}".format(intent, package)])
+        time.sleep(sleep)

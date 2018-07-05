@@ -50,12 +50,21 @@ parser.add_argument('--calcy_button_x', type=float, default=7.40,
                     help="X coordinate (in %) of calcyIV button.")
 parser.add_argument('--calcy_button_y', type=float, default=46.87,
                     help="Y coordinate (in %) of calcyIV button.")
+parser.add_argument('--use_intents', type=bool, default=True,
+                    help="Use intents to communicate with calcyIV.")
 args = parser.parse_args()
 
 p = pokemonlib.PokemonGo(args.device_id)
 n = 0
+if args.use_intents:
+    p.send_intent("tesmath.calcy.ACTION_HIDE_BUTTON", "tesmath.calcy/.IntentReceiver", 0)
+
 while args.stop_after is None or n < args.stop_after:
-    p.tap(args.calcy_button_x, args.calcy_button_y, args.sleep_long) # Calcy IV
+    if args.use_intents:
+        p.send_intent("tesmath.calcy.ACTION_ANALYZE_SCREEN", "tesmath.calcy/.IntentReceiver", args.sleep_long)
+    else:
+        p.tap(7.40, 46.87, args.sleep_long) # Calcy IV
+
     try:
         p.check_calcy_iv()
         skip_count = 0
