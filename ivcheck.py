@@ -1,5 +1,6 @@
 import pokemonlib
 import argparse
+import subprocess
 
 skip_count = 0
 
@@ -58,6 +59,21 @@ p = pokemonlib.PokemonGo(args.device_id)
 n = 0
 if args.use_intents:
     p.send_intent("tesmath.calcy.ACTION_HIDE_BUTTON", "tesmath.calcy/.IntentReceiver", 0)
+p.start_logcat()
+p.read_logcat()
+
+def check_calcy_logcat(p):
+    while True:
+        lines = p.read_logcat()
+        for line in lines:
+            if line.endswith(b"has red error box at the top of the screen"):
+                raise pokemonlib.RedBarError
+            if b"MainService: Received values: Id: " in line:
+                if b"-1" in line:
+                    raise pokemonlib.CalcyIVError
+                else:
+                    return True
+    
 
 while args.stop_after is None or n < args.stop_after:
     if args.use_intents:
@@ -65,8 +81,9 @@ while args.stop_after is None or n < args.stop_after:
     else:
         p.tap(7.40, 46.87, args.sleep_long) # Calcy IV
 
+
     try:
-        p.check_calcy_iv()
+        check_calcy_logcat(p)
         skip_count = 0
     except pokemonlib.RedBarError:
         print("RedBarError, continuing")

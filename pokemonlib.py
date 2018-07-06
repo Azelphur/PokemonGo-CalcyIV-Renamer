@@ -2,6 +2,7 @@ import time
 import argparse
 import subprocess
 import logging
+import select
 from PIL import Image
 from io import BytesIO
 
@@ -157,3 +158,16 @@ class PokemonGo(object):
     def send_intent(self, intent, package, sleep):
         return_code, stdout, stderr = self.run(["adb", "-s", self.device_id, "shell", "am broadcast -a {} -n {}".format(intent, package)])
         time.sleep(sleep)
+
+    def read_logcat(self):
+        lines = []
+        self.logcat_task.stdout.flush()
+        while select.select([self.logcat_task.stdout], [], [], 0.1)[0] != []:
+            lines.append(self.logcat_task.stdout.readline())
+        return lines
+
+    def start_logcat(self):
+        return_code, stdout, stderr = self.run(["adb", "-s", self.device_id, "shell", "pidof", "-s", "tesmath.calcy"])
+        pid = stdout.decode('utf-8').strip()
+        self.logcat_task = subprocess.Popen(["adb", "-s", self.device_id, "logcat", "--pid={}".format(pid)], stdout=subprocess.PIPE)
+        
