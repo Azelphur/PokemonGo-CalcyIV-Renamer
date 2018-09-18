@@ -7,7 +7,7 @@ This is a small script which uses adb to send touch and key events to your phone
 This script essentially blindly sends touch events to your phone. If a popup appears over where the script thinks a button is, or if your phone lags, it can do unintended things. Please keep an eye on your phone while it is running. If it transfers your shiny 100% dragonite, it's because you weren't watching it.
 
 # Usage
-Simply download the files, and run `python ivcheck.py`, the script depends on python-pillow, so be sure to install it.
+Simply download the files, edit config.yaml for your phone, and run `python ivcheck.py`. Make sure you are using Python >= 3.5.
 
 # (probably) FAQ
 * It's going too fast for my phone
