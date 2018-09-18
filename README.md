@@ -7,11 +7,13 @@ This is a small script which uses adb to send touch and key events to your phone
 This script essentially blindly sends touch events to your phone. If a popup appears over where the script thinks a button is, or if your phone lags, it can do unintended things. Please keep an eye on your phone while it is running. If it transfers your shiny 100% dragonite, it's because you weren't watching it.
 
 # Usage
-Simply download the files, edit config.yaml for your phone, and run `python ivcheck.py`. Make sure you are using Python >= 3.5.
+Simply download the files, edit config.yaml for your phone, and run `python ivcheck.py`. Make sure you are using Python >= 3.7.
 
 # (probably) FAQ
+* It taps in the wrong locations / doesn't work
+... You probably need to edit the locations in config.yaml, it's configured for a 1080p phone.
 * It's going too fast for my phone
-... This was developed and tested on a OnePlus 3T, so the script runs quite fast. You can slow it down by increasing the --sleep_short and --sleep_long arguments, which default to 0.7 and 1.5 respectively.
+... This was developed and tested on a OnePlus 3T, so the script runs quite fast. You can slow it down by editing config.yaml
 * It's not pasting the pokemons name
 ... For some reason the paste key event doesn't work on some phones, use the --nopaste argument to fix it.
 * Can it do multiple phones at the same time
