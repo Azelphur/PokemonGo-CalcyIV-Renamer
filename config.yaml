@@ -1,0 +1,11 @@
+locations:
+    rename: [539, 936]
+    next: [980, 280]
+    keyboard_ok: [933, 1085]
+    rename_ok: [930, 1050]
+    dismiss_calcy: [555, 1296]
+
+waits:
+    next: 0.5
+    rename: 0.5
+    rename_ok: 1
