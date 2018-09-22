@@ -56,7 +56,7 @@ class PokemonGo(object):
 
     async def start_logcat(self):
         return_code, stdout, stderr = await self.run(["adb", "-s", await self.get_device(), "shell", "pidof", "-s", "tesmath.calcy"])
-        logger.debug("Running pidof calcy got code %d: %s", stdout)
+        logger.debug("Running pidof calcy got code %d: %s", return_code, stdout)
         pid = stdout.decode('utf-8').strip()
         cmd = ["adb", "-s", await self.get_device(), "logcat", "--pid={}".format(pid)]
         logger.debug("Starting logcat %s", cmd)
@@ -66,6 +66,7 @@ class PokemonGo(object):
             stderr=asyncio.subprocess.PIPE,
         )
         # Seek to the end of the file
+        asrtarst()
         while True:
             try:
                 task = await asyncio.wait_for(self.read_logcat(), 0.1)
