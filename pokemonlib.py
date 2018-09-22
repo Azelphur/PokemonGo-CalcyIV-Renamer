@@ -66,7 +66,6 @@ class PokemonGo(object):
             stderr=asyncio.subprocess.PIPE,
         )
         # Seek to the end of the file
-        asrtarst()
         while True:
             try:
                 task = await asyncio.wait_for(self.read_logcat(), 0.1)
