@@ -29,6 +29,17 @@ class Main:
         if location in self.config['waits']:
             await asyncio.sleep(self.config['waits'][location])
 
+    async def swipe(self, location, duration):
+        await self.p.swipe(
+            self.config['locations'][location][0],
+            self.config['locations'][location][1],
+            self.config['locations'][location][0],
+            self.config['locations'][location][1],
+            duration
+        )
+        if location in self.config['waits']:
+            await asyncio.sleep(self.config['waits'][location])   
+
     async def start(self):
         self.p = PokemonGo()
         await self.p.start_logcat()
@@ -48,7 +59,12 @@ class Main:
 
             await self.tap('dismiss_calcy')
             await self.tap('rename')
-            await self.p.key(279) # Paste into rename
+            if args.touch_paste:
+                await self.swipe('edit_box', 600)
+                await self.tap('paste')
+
+            else:
+                await self.p.key(279) # Paste into rename
             await self.tap('keyboard_ok')
             await self.tap('rename_ok')
             await self.tap('next')
@@ -89,5 +105,7 @@ if __name__ == '__main__':
                         help="Maximum retries, set to 0 for unlimited.")
     parser.add_argument('--config', type=str, default="config.yaml",
                         help="Config file location.")
+    parser.add_argument('--touch-paste', default=False, action='store_true',
+                        help="Use touch instead of keyevent for paste.")
     args = parser.parse_args()
     asyncio.run(Main(args).start())

@@ -4,6 +4,8 @@ locations:
     keyboard_ok: [933, 1085]
     rename_ok: [930, 1050]
     dismiss_calcy: [555, 1296]
+    edit_box: [90, 1040] # only used with --touch-paste
+    paste: [560, 900] # only used with --touch-paste
 
 waits:
     next: 0.5

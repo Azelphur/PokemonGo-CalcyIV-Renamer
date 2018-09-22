@@ -58,7 +58,7 @@ class PokemonGo(object):
         #return_code, stdout, stderr = await self.run(["adb", "-s", await self.get_device(), "shell", "pidof", "-s", "tesmath.calcy"])
         #logger.debug("Running pidof calcy got code %d: %s", return_code, stdout)
         #pid = stdout.decode('utf-8').strip()
-        cmd = ["adb", "-s", await self.get_device(), "logcat"]
+        cmd = ["adb", "-s", await self.get_device(), "logcat", "-T", "1"]
         logger.debug("Starting logcat %s", cmd)
         self.logcat_task = await asyncio.create_subprocess_exec(
             *cmd,
@@ -68,7 +68,7 @@ class PokemonGo(object):
         # Seek to the end of the file
         while True:
             try:
-                task = await asyncio.wait_for(self.read_logcat(), 0.1)
+                task = await asyncio.wait_for(self.logcat_task.stdout.readline(), 0.5)
             except asyncio.TimeoutError:
                 break
 
@@ -91,3 +91,20 @@ class PokemonGo(object):
 
     async def key(self, key):
         await self.run(["adb", "-s", self.device_id, "shell", "input", "keyevent", key])
+
+    async def swipe(self, x1, y1, x2, y2, duration=None):
+        args = [
+            "adb",
+            "-s",
+            await self.get_device(),
+            "shell",
+            "input",
+            "swipe",
+            x1,
+            y1,
+            x2,
+            y2
+        ]
+        if duration:
+            args.append(duration)
+        await self.run(args)
