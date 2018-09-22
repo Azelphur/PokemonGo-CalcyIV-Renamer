@@ -20,6 +20,9 @@ class RedBarError(Exception):
 class PhoneNotConnectedError(Exception):
     pass
 
+class LogcatNotRunningError(Exception):
+    pass
+
 class PokemonGo(object):
     def __init__(self):
         self.device_id = None
@@ -56,7 +59,8 @@ class PokemonGo(object):
         pid = stdout.decode('utf-8').strip()
         self.logcat_task = await asyncio.create_subprocess_exec(
             *["adb", "-s", await self.get_device(), "logcat", "--pid={}".format(pid)],
-            stdout=asyncio.subprocess.PIPE
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
         )
         # Seek to the end of the file
         while True:
@@ -66,6 +70,12 @@ class PokemonGo(object):
                 break
 
     async def read_logcat(self):
+        if self.logcat_task.returncode != None:
+            logger.error("Logcat process is not running")
+            logger.error("stdout %s", await self.logcat_task.stdout.read())
+            logger.error("stderr %s", await self.logcat_task.stderr.read())
+            raise LogcatNotRunningError()
+            
         line = await self.logcat_task.stdout.readline()
         logger.debug("Received logcat line: %s", line)
         return line
