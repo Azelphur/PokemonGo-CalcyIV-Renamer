@@ -3,10 +3,12 @@ import yaml
 import asyncio
 import re
 import argparse
+from sys import platform
 
 RE_CALCY_IV = re.compile(r"^MainService: Received values: Id: \d+ \((?P<name>.+)\), Nr: (?P<id>\d+), CP: (?P<cp>\d+), Max HP: (?P<max_hp>\d+), Dust cost: (?P<dust_cost>\d+), Level: (?P<level>[0-9\.]+), FastMove (?P<fast_move>.+), SpecialMove (?P<special_move>.+), Gender (?P<gender>\d)$")
 RE_RED_BAR = re.compile(r"^av      : Screenshot #\d has red error box at the top of the screen$")
-RE_FINISHED = re.compile(r".+\s+: calculateScanOutputData finished after \d+ms$")
+#RE_FINISHED = re.compile(r".+\s+: calculateScanOutputData finished after \d+ms$")
+RE_FINISHED = re.compile(r".+\s+: Screenshot analysis took \d+ms$")
 RE_SCAN_INVALID = re.compile(r".+\s+: Scan invalid$")
 
 
@@ -98,6 +100,8 @@ class Main:
                     raise CalcyIVError
         
 if __name__ == '__main__':
+    if platform == 'win32':
+        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
     parser = argparse.ArgumentParser(description='Pokemon go renamer')
     parser.add_argument('--device-id', type=str, default=None,
                         help="Optional, if not specified the phone is automatically detected. Useful only if you have multiple phones connected. Use adb devices to get a list of ids.")
