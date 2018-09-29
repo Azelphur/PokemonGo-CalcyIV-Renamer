@@ -66,6 +66,9 @@ class PokemonGo(object):
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
+        await self.seek_to_end()
+
+    async def seek_to_end(self):
         # Seek to the end of the file
         while True:
             try:

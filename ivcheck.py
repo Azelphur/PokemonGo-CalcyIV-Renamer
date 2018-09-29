@@ -7,8 +7,7 @@ from sys import platform
 
 RE_CALCY_IV = re.compile(r"^MainService: Received values: Id: \d+ \((?P<name>.+)\), Nr: (?P<id>\d+), CP: (?P<cp>\d+), Max HP: (?P<max_hp>\d+), Dust cost: (?P<dust_cost>\d+), Level: (?P<level>[0-9\.]+), FastMove (?P<fast_move>.+), SpecialMove (?P<special_move>.+), Gender (?P<gender>\d)$")
 RE_RED_BAR = re.compile(r"^av      : Screenshot #\d has red error box at the top of the screen$")
-#RE_FINISHED = re.compile(r".+\s+: calculateScanOutputData finished after \d+ms$")
-RE_FINISHED = re.compile(r".+\s+: Screenshot analysis took \d+ms$")
+RE_SUCCESS = re.compile(r".+\s+: calculateScanOutputData finished after \d+ms$")
 RE_SCAN_INVALID = re.compile(r".+\s+: Scan invalid$")
 
 
@@ -49,13 +48,14 @@ class Main:
         while True:
             try:
                 values = await self.check_pokemon()
+                await self.p.seek_to_end() # just in case any additional lines are present
                 num_errors = 0
             except RedBarError:
                 continue
             except CalcyIVError:
                 num_errors += 1
                 if num_errors > args.max_retries:
-                    self.tap('next')
+                    await self.tap('next')
                     num_errors = 0
                 continue
 
@@ -88,8 +88,10 @@ class Main:
             if match:
                 red_bar = True
 
-            match = RE_FINISHED.match(line)
+            match = RE_SUCCESS.match(line)
             if match:
+                if values is None:
+                    raise CalcyIVError
                 return values
 
             match = RE_SCAN_INVALID.match(line)
