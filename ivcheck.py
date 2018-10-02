@@ -113,5 +113,14 @@ if __name__ == '__main__':
                         help="Config file location.")
     parser.add_argument('--touch-paste', default=False, action='store_true',
                         help="Use touch instead of keyevent for paste.")
+    parser.add_argument('--pid-name', default=None, type=str,
+                        help="Create pid file")
+    parser.add_argument('--pid-dir', default=None, type=str,
+                        help="Change default pid directory")
     args = parser.parse_args()
-    asyncio.run(Main(args).start())
+    if args.pid_name is not None:
+        from pid import PidFile
+        with PidFile(args.pid_name, args.pid_dir) as p:
+            asyncio.run(Main(args).start())
+    else:
+        asyncio.run(Main(args).start())
