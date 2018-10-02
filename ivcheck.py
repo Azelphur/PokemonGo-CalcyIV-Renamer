@@ -43,7 +43,7 @@ class Main:
 
     async def start(self):
         self.p = PokemonGo()
-        self.p.set_device(self.args.device_id)
+        await self.p.set_device(self.args.device_id)
         await self.p.start_logcat()
         num_errors = 0
         while True:
