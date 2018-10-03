@@ -56,23 +56,23 @@ class PokemonGo(object):
         return devices
 
     async def start_logcat(self):
-        return_code, stdout, stderr = await self.run(["adb", "-s", await self.get_device(), "shell", "pidof", "-s", "tesmath.calcy"])
-        logger.debug("Running pidof calcy got code %d: %s", return_code, stdout)
-        self.calcy_pid = stdout.decode('utf-8').strip()
-        cmd = ["adb", "-s", await self.get_device(), "logcat", "-T", "1"]
+        #return_code, stdout, stderr = await self.run(["adb", "-s", await self.get_device(), "shell", "pidof", "-s", "tesmath.calcy"])
+        #logger.debug("Running pidof calcy got code %d: %s", return_code, stdout)
+        #self.calcy_pid = stdout.decode('utf-8').strip()
+        cmd = ["adb", "-s", await self.get_device(), "logcat", "-T", "1", "-v", "brief"]
         logger.debug("Starting logcat %s", cmd)
         self.logcat_task = await asyncio.create_subprocess_exec(
             *cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
-        await self.seek_to_end()
+        await self.logcat_task.stdout.readline() # Read and discard the one line as -T 0 doesn't work
 
     async def seek_to_end(self):
         # Seek to the end of the file
         while True:
             try:
-                task = await asyncio.wait_for(self.logcat_task.stdout.readline(), 0.5)
+                task = await asyncio.wait_for(self.logcat_task.stdout.readline(), 0.2)
             except asyncio.TimeoutError:
                 break
 
@@ -84,9 +84,10 @@ class PokemonGo(object):
             raise LogcatNotRunningError()
 
         line = await self.logcat_task.stdout.readline()
-        while line.split()[2].decode('utf-8') != self.calcy_pid:
-            line = await self.logcat_task.stdout.readline()
-        logger.debug("Received logcat line: %s", line)
+        line = line.decode('utf-8').rstrip()
+        #while line.split()[2].decode('utf-8') != self.calcy_pid:
+        #    line = await self.logcat_task.stdout.readline()
+        #logger.debug("Received logcat line: %s", line)
         return line
 
     async def send_intent(self, intent, package):

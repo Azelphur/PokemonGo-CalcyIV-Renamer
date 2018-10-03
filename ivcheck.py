@@ -3,12 +3,21 @@ import yaml
 import asyncio
 import re
 import argparse
+import logging
 from sys import platform
 
-RE_CALCY_IV = re.compile(r"^MainService: Received values: Id: \d+ \((?P<name>.+)\), Nr: (?P<id>\d+), CP: (?P<cp>\d+), Max HP: (?P<max_hp>\d+), Dust cost: (?P<dust_cost>\d+), Level: (?P<level>[0-9\.]+), FastMove (?P<fast_move>.+), SpecialMove (?P<special_move>.+), Gender (?P<gender>\d)$")
-RE_RED_BAR = re.compile(r"^av      : Screenshot #\d has red error box at the top of the screen$")
-RE_SUCCESS = re.compile(r".+\s+: calculateScanOutputData finished after \d+ms$")
-RE_SCAN_INVALID = re.compile(r".+\s+: Scan invalid$")
+logger = logging.getLogger('ivcheck')
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
+RE_CALCY_IV = re.compile(r"^./MainService\(\d+\): Received values: Id: \d+ \((?P<name>.+)\), Nr: (?P<id>\d+), CP: (?P<cp>\d+), Max HP: (?P<max_hp>\d+), Dust cost: (?P<dust_cost>\d+), Level: (?P<level>[0-9\.]+), FastMove (?P<fast_move>.+), SpecialMove (?P<special_move>.+), Gender (?P<gender>\d)$")
+RE_RED_BAR = re.compile(r"^.+\(\d+\): Screenshot #\d has red error box at the top of the screen$")
+RE_SUCCESS = re.compile(r"^.+\(\d+\): calculateScanOutputData finished after \d+ms$")
+RE_SCAN_INVALID = re.compile(r"^.+\(\d+\): Scan invalid$")
 
 
 class CalcyIVError(Exception):
@@ -78,28 +87,32 @@ class Main:
         values = None
         while True:
             line = await self.p.read_logcat()
-            line = line.decode('utf-8').strip()
-            line = line[33:] # Strip off date and pid
 
             match = RE_CALCY_IV.match(line)
             if match:
+                logger.debug("RE_CALCY_IV matched")
                 values = match
 
             match = RE_RED_BAR.match(line)
             if match:
+                logger.debug("RE_RED_BAR matched")
                 red_bar = True
 
             match = RE_SUCCESS.match(line)
             if match:
                 if values is None:
+                    logger.debug("RE_SUCCESS matched but values is none")
                     raise CalcyIVError
+                logger.debug("RE_SUCCESS matched")
                 return values
 
             match = RE_SCAN_INVALID.match(line)
             if match:
                 if red_bar:
+                    logger.debug("RE_SCAN_INVALID matched and red_bar is True")
                     raise RedBarError
                 else:
+                    logger.debug("RE_SCAN_INVALID matched, raising CalcyIVError")
                     raise CalcyIVError
         
 if __name__ == '__main__':
