@@ -14,10 +14,10 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-RE_CALCY_IV = re.compile(r"^./MainService\(\d+\): Received values: Id: \d+ \((?P<name>.+)\), Nr: (?P<id>\d+), CP: (?P<cp>\d+), Max HP: (?P<max_hp>\d+), Dust cost: (?P<dust_cost>\d+), Level: (?P<level>[0-9\.]+), FastMove (?P<fast_move>.+), SpecialMove (?P<special_move>.+), Gender (?P<gender>\d)$")
-RE_RED_BAR = re.compile(r"^.+\(\d+\): Screenshot #\d has red error box at the top of the screen$")
-RE_SUCCESS = re.compile(r"^.+\(\d+\): calculateScanOutputData finished after \d+ms$")
-RE_SCAN_INVALID = re.compile(r"^.+\(\d+\): Scan invalid$")
+RE_CALCY_IV = re.compile(r"^./MainService\(\s+\d+\): Received values: Id: \d+ \((?P<name>.+)\), Nr: (?P<id>\d+), CP: (?P<cp>\d+), Max HP: (?P<max_hp>\d+), Dust cost: (?P<dust_cost>\d+), Level: (?P<level>[0-9\.]+), FastMove (?P<fast_move>.+), SpecialMove (?P<special_move>.+), Gender (?P<gender>\d), Level-up (true|false):$")
+RE_RED_BAR = re.compile(r"^.+\(\s+\d+\): Screenshot #\d has red error box at the top of the screen$")
+RE_SUCCESS = re.compile(r"^.+\(\s+\d+\): calculateScanOutputData finished after \d+ms$")
+RE_SCAN_INVALID = re.compile(r"^.+\(\s+\d+\): Scan invalid$")
 
 
 class CalcyIVError(Exception):
@@ -87,7 +87,6 @@ class Main:
         values = None
         while True:
             line = await self.p.read_logcat()
-
             match = RE_CALCY_IV.match(line)
             if match:
                 logger.debug("RE_CALCY_IV matched")
