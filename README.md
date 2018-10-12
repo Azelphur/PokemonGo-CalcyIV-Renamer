@@ -9,6 +9,59 @@ This script essentially blindly sends touch events to your phone. If a popup app
 # Usage
 Simply download the files, edit config.yaml for your phone, and run `python ivcheck.py`. Make sure you are using Python >= 3.7.
 
+# Actions
+Actions allow you to define new ways of renaming your pokemon, outside of the usual Calcy IV renaming scheme. Actions are processed from first to last, and the first one to have all its conditions pass is used.
+
+**Conditions:**
+- name - The Pokemons name
+- iv - The exact IV (note: this will only be set if Calcy IV has discovered an exact IV
+- iv_min - The minimum possible IV (This will be set even if Calcy IV pulls an exact IV)
+- iv_max - The maximum possible IV (This will be set even if Calcy IV pulls an exact IV)
+- success - Whether the calcy IV scan succeeded (true/false) (Note: Will be false if pokemon is blacklisted)
+- blacklist - Whether the pokemon is in the blacklist
+
+Conditions also support the following operators:
+- lt - Less than
+- le - Less than or equal to
+- eq - Equal to
+- ne - Not equal to
+- ge - Greater than or equal to
+- gt - Greater than
+- in - In list
+
+**Actions:**
+- rename-calcy - Rename and paste into the edit box, uses Calcy IVs naming scheme
+- rename - Allows you to specify your own name for the pokemon
+- favorite - Favorite the pokemon
+
+**Examples:**
+Faster rename run by skipping rename on Pokemon with <90% IVs. Rename any pokemon that failed to scan as ".FAILED" so you know which ones failed to scan, and which ones are skipped as trash.
+
+```
+actions:
+  - conditions:
+      success: false
+    actions:
+      rename: ".FAILED"
+  - conditions:
+      iv_max__gte: 90
+    actions:
+      rename-calcy:
+```
+
+Rename bad IV Abra, Gastly and Machop to ".TRADE" so you can trade them later.
+```
+    - conditions:
+        name__in: 
+          - Abra
+          - Gastly
+          - Machop
+        iv_max__lt: 90
+      actions:
+        rename: ".TRADE"
+```
+
+
 # (probably) FAQ
 * It taps in the wrong locations / doesn't work
 ... You probably need to edit the locations in config.yaml, it's configured for a 1080p phone.
