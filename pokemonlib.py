@@ -1,7 +1,9 @@
 from io import BytesIO
+from PIL import Image
 import asyncio
 import logging
 import subprocess
+import re
 
 logger = logging.getLogger('PokemonGo')
 logger.setLevel(logging.DEBUG)
@@ -10,6 +12,8 @@ ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
+
+RE_CLIPBOARD_TEXT = re.compile("^./ClipboardReceiver\(\s*\d+\): Clipboard text: (.+)$")
 
 class CalcyIVError(Exception):
     pass
@@ -27,6 +31,20 @@ class PokemonGo(object):
     def __init__(self):
         self.device_id = None
         self.calcy_pid = None
+        self.use_fallback_screenshots = False
+
+    async def screencap(self):
+        if not self.use_fallback_screenshots:
+            return_code, stdout, stderr = await self.run(["adb", "-s", await self.get_device(), "exec-out", "screencap", "-p"])
+            try:
+                return Image.open(BytesIO(stdout))
+            except (OSError, IOError):
+                logger.debug("Screenshot failed, using fallback method")
+                self.use_fallback_screenshots = True
+        return_code, stdout, stderr = await self.run(["adb", "-s", await self.get_device(), "shell", "screencap", "-p", "/sdcard/screen.png"])
+        return_code, stdout, stderr = await self.run(["adb", "-s", await self.get_device(), "pull", "/sdcard/screen.png", "."])
+        image = Image.open("screen.png")
+        return image
 
     async def set_device(self, device_id=None):
         self.device_id = device_id
@@ -90,14 +108,28 @@ class PokemonGo(object):
         #logger.debug("Received logcat line: %s", line)
         return line
 
-    async def send_intent(self, intent, package):
-        await self.run(["adb", "-s", await self.get_device(), "shell", "am broadcast -a {} -n {}".format(intent, package)])
+    async def get_clipboard(self):
+        await self.send_intent("intent:#Intent\;action=clipper.get\;end")
+        while True:
+            line = await self.read_logcat()
+            match = RE_CLIPBOARD_TEXT.match(line)
+            if match:
+                return match.group(1)
+
+    async def send_intent(self, intent, package=None):
+        cmd = "am broadcast {}".format(intent)
+        if package:
+            cmd = cmd + " -n {}".format(package)
+        await self.run(["adb", "-s", await self.get_device(), "shell", cmd])
 
     async def tap(self, x, y):
         await self.run(["adb", "-s", await self.get_device(), "shell", "input", "tap", x, y])
 
     async def key(self, key):
-        await self.run(["adb", "-s", self.device_id, "shell", "input", "keyevent", key])
+        await self.run(["adb", "-s", await self.get_device(), "shell", "input", "keyevent", key])
+
+    async def text(self, text):
+        await self.run(["adb", "-s", await self.get_device(), "shell", "input", "text", text])
 
     async def swipe(self, x1, y1, x2, y2, duration=None):
         args = [

@@ -3,11 +3,26 @@ locations:
     next: [980, 280]
     keyboard_ok: [933, 1085]
     rename_ok: [930, 1050]
-    dismiss_calcy: [555, 1296]
+    close_calcy_dialog: [966, 1092]
     edit_box: [90, 1040] # only used with --touch-paste
     paste: [560, 900] # only used with --touch-paste
+    favorite_button: [980, 156]
+    favorite_button_box: [960, 142, 1001, 180]
 
 waits:
     next: 0.5
     rename: 0.5
     rename_ok: 1
+
+blacklist:
+    - Charizard
+    - Wailmer
+
+actions:
+    - actions:
+        rename-calcy: # Rename normally
+
+
+iv_regexes:
+    - ^(?P<iv_min>\d+)\-(?P<iv_max>\d+).*$
+    - ^(?P<iv>\d+).*$
