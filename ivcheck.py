@@ -46,19 +46,6 @@ class Main:
         self.use_fallback_screenshots = False
         self.iv_regexes = [re.compile(r) for r in self.config["iv_regexes"]]
 
-    async def screencap(self):
-        if not self.use_fallback_screenshots:
-            return_code, stdout, stderr = await self.run(["adb", "-s", await self.get_device(), "exec-out", "screencap", "-p"])
-            try:
-                return Image.open(BytesIO(stdout))
-            except (OSError, IOError):
-                logger.debug("Screenshot failed, using fallback method")
-                self.use_fallback_screenshots = True
-        return_code, stdout, stderr = await self.run(["adb", "-s", await self.get_device(), "shell", "screencap", "-p", "/sdcard/screen.png"])
-        return_code, stdout, stderr = await self.run(["adb", "-s", await self.get_device(), "pull", "/sdcard/screen.png", "."])
-        image = Image.open("screen.png")
-        return image
-
     async def tap(self, location):
         await self.p.tap(*self.config['locations'][location])
         if location in self.config['waits']:
@@ -261,7 +248,7 @@ class Main:
         values = {}
         while True:
             line = await self.p.read_logcat()
-
+            logger.debug("logcat line received: %s", line)
             match = RE_CALCY_IV.match(line)
             if match:
                 logger.debug("RE_CALCY_IV matched")
