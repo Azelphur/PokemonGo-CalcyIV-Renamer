@@ -17,6 +17,7 @@ Actions allow you to define new ways of renaming your pokemon, outside of the us
 - iv_max - The maximum possible IV (This will be set even if Calcy IV pulls an exact IV)
 - success - Whether the calcy IV scan succeeded (true/false) (Note: Will be false if pokemon is blacklisted)
 - blacklist - Whether the pokemon is in the blacklist
+- appraised - Whether the pokemon has been appraised or not (true/false)
 
 Conditions also support the following operators:
 - lt - Less than

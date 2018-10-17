@@ -84,6 +84,7 @@ class Main:
             blacklist = False
             state, values = await self.check_pokemon()
             await self.p.seek_to_end() # just in case any additional lines are present
+
             if values["name"] in self.config["blacklist"]:
                 blacklist = True
             elif state == CALCY_SUCCESS:
@@ -96,10 +97,23 @@ class Main:
                     continue
                 num_errors = 0
 
-            values["success"] = True if state == CALCY_SUCCESS else False
+            values["success"] = True if state == CALCY_SUCCESS and blacklist == False else False
             values["blacklist"] = blacklist
+            values["appraised"] = False
 
-            actions = await self.get_name(values)
+            actions = await self.get_actions(values)
+            if "appraise" in actions:
+                await self.tap("pokemon_menu_button")
+                await self.tap("appraise_button")
+                await self.p.send_intent("intent:#Intent\;action=tesmath.calcy.ACTION_ANALYZE_SCREEN\;end", "tesmath.calcy/.IntentReceiver")
+                for i in range(0, 3):
+                    await self.tap("continue_appraisal")
+                while await self.check_appraising():
+                    await self.tap("continue_appraisal")
+                await self.tap("calcy_appraisal_save_button")
+                values["appraised"] = True
+                actions = await self.get_actions(values)
+                await self.tap("dismiss_calcy")
 
             if "rename" in actions or "rename-calcy" in actions:
                 if values["success"] is False:
@@ -118,7 +132,7 @@ class Main:
                 await self.tap('keyboard_ok')
                 await self.tap('rename_ok')
             if "favorite" in actions:
-                if await self.check_favorite():
+                if not await self.check_favorite():
                     await self.tap('favorite_button')
             await self.tap('next')
 
@@ -142,6 +156,26 @@ class Main:
                 return d
 
         raise Exception("Clipboard regex did not match")
+
+    async def check_appraising(self):
+        """
+        Not the best check, just search the area
+        for white pixels
+        """ 
+        screencap = await self.p.screencap()
+        crop = screencap.crop(self.config['locations']['appraisal_box'])
+        rgb_im = crop.convert('RGB')
+        width, height = rgb_im.size
+        colors = [(255, 255, 255)]
+
+        color_count = 0
+        for x in range(1, width):
+            for y in range(1, height):
+                c = rgb_im.getpixel((x, y))
+                if c in colors:
+                    color_count += 1
+        return color_count > 100000
+  
 
     async def check_favorite(self):
         """
@@ -186,9 +220,9 @@ class Main:
                     color_count += 1
         return color_count > 500
 
-    async def get_name(self, values):
+    async def get_actions(self, values):
         clipboard_values = None
-        valid_conditions = ["name", "iv", "iv_min", "iv_max", "success", "blacklist"]
+        valid_conditions = ["name", "iv", "iv_min", "iv_max", "success", "blacklist", "appraised"]
         clipboard_required = ["iv", "iv_min", "iv_max"]
         for ruleset in self.config["actions"]:
             conditions = ruleset.get("conditions", {})
@@ -217,12 +251,12 @@ class Main:
                     passed = False
                     break
             if passed:
-                print("MATCHED", ruleset)
                 return ruleset.get("actions", {})
         raise Exception("No action matched")
 
     async def check_pokemon(self):
         await self.p.send_intent("intent:#Intent\;action=tesmath.calcy.ACTION_ANALYZE_SCREEN\;B.silentMode=true\;end", "tesmath.calcy/.IntentReceiver")
+        #await self.p.send_intent("intent:#Intent\;action=tesmath.calcy.ACTION_ANALYZE_SCREEN\;end", "tesmath.calcy/.IntentReceiver")
         red_bar = False
         values = {}
         while True:
