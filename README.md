@@ -32,6 +32,7 @@ Conditions also support the following operators:
 - rename-calcy - Rename and paste into the edit box, uses Calcy IVs naming scheme
 - rename - Allows you to specify your own name for the pokemon
 - favorite - Favorite the pokemon
+- appraise - Appraise the pokemon
 
 **Examples:**
 Faster rename run by skipping rename on Pokemon with <90% IVs. Rename any pokemon that failed to scan as ".FAILED" so you know which ones failed to scan, and which ones are skipped as trash.
