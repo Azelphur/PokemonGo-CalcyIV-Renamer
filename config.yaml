@@ -1,18 +1,26 @@
 locations:
     rename: [539, 936]
     next: [980, 280]
-    keyboard_ok: [933, 1085]
-    rename_ok: [930, 1050]
-    close_calcy_dialog: [966, 1092]
+    keyboard_ok: [948, 1212]
+    rename_ok: [538, 1102]
+    close_calcy_dialog: [913, 1308]
     edit_box: [90, 1040] # only used with --touch-paste
     paste: [560, 900] # only used with --touch-paste
     favorite_button: [980, 156]
     favorite_button_box: [960, 142, 1001, 180]
+    pokemon_menu_button: [930, 1893]
+    appraise_button: [936, 1488]
+    continue_appraisal: [538, 1893]
+    calcy_appraisal_save_button: [855, 1149]
+    dismiss_calcy: [555, 1296]
+    appraisal_box: [45, 1664, 1032, 1872]
 
 waits:
     next: 0.5
     rename: 0.5
     rename_ok: 1
+    pokemon_menu_button: 1
+    appraise_button: 1
 
 blacklist:
     - Charizard
