@@ -109,17 +109,20 @@ class PokemonGo(object):
         return line
 
     async def get_clipboard(self):
-        await self.send_intent("intent:#Intent\;action=clipper.get\;end")
+        await self.send_intent("clipper.get")
         while True:
             line = await self.read_logcat()
             match = RE_CLIPBOARD_TEXT.match(line)
             if match:
                 return match.group(1)
 
-    async def send_intent(self, intent, package=None):
-        cmd = "am broadcast {}".format(intent)
+    async def send_intent(self, intent, package=None, extra_values=[]):
+        cmd = "am broadcast -a {}".format(intent)
         if package:
             cmd = cmd + " -n {}".format(package)
+        for key, value in extra_values:
+            if isinstance(value, bool):
+                cmd = cmd + " --ez {} {}".format(key, "true" if value else "false")
         await self.run(["adb", "-s", await self.get_device(), "shell", cmd])
 
     async def tap(self, x, y):

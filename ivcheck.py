@@ -92,7 +92,7 @@ class Main:
             if "appraise" in actions:
                 await self.tap("pokemon_menu_button")
                 await self.tap("appraise_button")
-                await self.p.send_intent("intent:#Intent\;action=tesmath.calcy.ACTION_ANALYZE_SCREEN\;end", "tesmath.calcy/.IntentReceiver")
+                await self.p.send_intent("tesmath.calcy.ACTION_ANALYZE_SCREEN", "tesmath.calcy/.IntentReceiver", [["silentMode", True]])
                 for i in range(0, 3):
                     await self.tap("continue_appraisal")
                 while await self.check_appraising():
@@ -242,8 +242,7 @@ class Main:
         raise Exception("No action matched")
 
     async def check_pokemon(self):
-        await self.p.send_intent("intent:#Intent\;action=tesmath.calcy.ACTION_ANALYZE_SCREEN\;B.silentMode=true\;end", "tesmath.calcy/.IntentReceiver")
-        #await self.p.send_intent("intent:#Intent\;action=tesmath.calcy.ACTION_ANALYZE_SCREEN\;end", "tesmath.calcy/.IntentReceiver")
+        await self.p.send_intent("tesmath.calcy.ACTION_ANALYZE_SCREEN", "tesmath.calcy/.IntentReceiver", [["silentMode", True]])
         red_bar = False
         values = {}
         while True:
