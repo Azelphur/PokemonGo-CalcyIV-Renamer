@@ -60,6 +60,69 @@ Rename bad IV Abra, Gastly and Machop to ".TRADE" so you can trade them later.
         rename: ".TRADE"
 ```
 
+An example of the actions I currently use. I haven't finished fleshing it out yet, but it's a bit more advanced and gives you an idea on what you can do, the rules, in order, do the following:
+
+- Rename any pokemon that fail to scan as ".FAILED".
+- If it hasn't been appraised, and it's possibly 0 IV, appraise it.
+- If its 0 or 100 IV, favorite it and rename it using calcy.
+- If it has a possibility of being greater than 90 IV, appraise it.
+- If it's an Abra, Kadabra, Exeggcute, Gastly, ... and it's less than 90 IV, rename it to ".TRADE" so I can easily trade it later.
+- If it's a Mewtwo, Alolan Raichu, Spinda, ... use calcy to rename it.
+- If it's less than 90 IV, don't bother renaming it. This saves time.
+- If all else fails, use calcy to rename it.
+
+```actions:
+    - conditions:
+        success: false
+      actions:
+        rename: ".FAILED"
+    - conditions:
+        iv:
+        iv_min__eq: 0
+        appraised: false
+      actions:
+        appraise:
+    - conditions:
+        iv__in: [0, 100]
+      actions:
+        favorite:
+        rename-calcy:
+    - conditions:
+        iv:
+        iv_max__ge: 90
+        appraised: false
+      actions:
+        appraise:
+    - conditions:
+        name__in:
+          - Abra
+          - Kadabra
+          - Exeggcute
+          - Gastly
+          - Machop
+          - Ralts
+          - Magikarp
+          - Eevee
+          - Kirlia
+          - Electabuzz
+        iv_max__lt: 90
+      actions:
+        rename: ".TRADE"
+    - conditions:
+        name__in: 
+          - Mewtwo
+          - Raichu Alolan
+          - Spinda
+          - Chansey
+      actions:
+        rename-calcy:
+    - conditions:
+        iv_max__le: 90
+    - actions:
+        rename-calcy: # Rename normally
+```
+
+
 
 # (probably) FAQ
 * It taps in the wrong locations / doesn't work
