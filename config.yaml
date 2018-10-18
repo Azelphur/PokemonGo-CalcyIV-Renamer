@@ -2,15 +2,15 @@ locations:
     rename: [539, 936]
     next: [980, 280]
     keyboard_ok: [933, 1085]
-    rename_ok: [930, 1050]
+    rename_ok: [540, 1050]
     close_calcy_dialog: [966, 1092]
-    edit_box: [90, 1040] # only used with --touch-paste
-    paste: [560, 900] # only used with --touch-paste
+    edit_box: [90, 1090] # only used with --touch-paste
+    paste: [483, 1092] # only used with --touch-paste
     favorite_button: [980, 156]
     favorite_button_box: [960, 142, 1001, 180]
-    pokemon_menu_button: [930, 1893]
-    appraise_button: [936, 1488]
-    continue_appraisal: [538, 1893]
+    pokemon_menu_button: [933, 1777]
+    appraise_button: [934, 1377]
+    continue_appraisal: [590, 1770]
     calcy_appraisal_save_button: [855, 1149]
     dismiss_calcy: [555, 1296]
     appraisal_box: [45, 1664, 1032, 1872]
