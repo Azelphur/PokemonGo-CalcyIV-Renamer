@@ -114,7 +114,9 @@ class Main:
                     else:
                         await self.p.key(279) # Paste into rename
                 elif "rename" in actions:
-                    await self.p.text(actions["rename"])
+                    # await self.p.text(actions["rename"])
+                    await self.p.send_intent("clipper.set", extra_values=[["text", actions["rename"]]])
+                    await self.p.key(279)  # Paste into rename
 
                 await self.tap('keyboard_ok')
                 await self.tap('rename_ok')
