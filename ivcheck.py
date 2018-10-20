@@ -5,6 +5,7 @@ import re
 import argparse
 import logging
 import operator
+import unicodedata
 from sys import platform
 
 def in_func(a, b):
@@ -60,7 +61,7 @@ class Main:
             duration
         )
         if location in self.config['waits']:
-            await asyncio.sleep(self.config['waits'][location])   
+            await asyncio.sleep(self.config['waits'][location])
 
     async def start(self):
         self.p = PokemonGo()
@@ -127,7 +128,10 @@ class Main:
         clipboard = await self.p.get_clipboard()
 
         for iv_regex in self.iv_regexes:
-            match = iv_regex.match(clipboard)
+            # unicodedata replaces unicode characters like '¹' (u'\xb9')
+            # with their normalized counterpart, e.g.:     '1' (u'1')
+            # Works with most (if not all) of CalcyIV's numeric schemes.
+            match = iv_regex.match(unicodedata.normalize('NFKD', clipboard))
             if match:
                 d = match.groupdict()
                 if "iv" in d:
@@ -147,7 +151,7 @@ class Main:
         """
         Not the best check, just search the area
         for white pixels
-        """ 
+        """
         screencap = await self.p.screencap()
         crop = screencap.crop(self.config['locations']['appraisal_box'])
         rgb_im = crop.convert('RGB')
@@ -161,13 +165,13 @@ class Main:
                 if c in colors:
                     color_count += 1
         return color_count > 100000
-  
+
 
     async def check_favorite(self):
         """
         Not the best check, just search the area
         for pixels that are the right color
-        """ 
+        """
         screencap = await self.p.screencap()
         crop = screencap.crop(self.config['locations']['favorite_button_box'])
         rgb_im = crop.convert('RGB')
@@ -272,7 +276,7 @@ class Main:
                 else:
                     logger.debug("RE_SCAN_INVALID matched, raising CalcyIVError")
                     return CALCY_SCAN_INVALID, values
-        
+
 if __name__ == '__main__':
     if platform == 'win32':
         asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
