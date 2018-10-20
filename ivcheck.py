@@ -188,7 +188,7 @@ class Main:
             if "appraise" in actions:
                 await self.tap("pokemon_menu_button")
                 await self.tap("appraise_button")
-                await self.p.send_intent("tesmath.calcy.ACTION_ANALYZE_SCREEN", "tesmath.calcy/.IntentReceiver", [["silentMode", True]])
+                await self.p.send_intent("tesmath.calcy.ACTION_ANALYZE_SCREEN", "tesmath.calcy/.IntentReceiver", [["silentMode", True], ["--user", self.args.user]])
                 for _ in range(0, 4):  # we can do it four times before beggining to screencap
                     await self.tap("continue_appraisal")
                 while await self.check_appraising():
@@ -350,7 +350,7 @@ class Main:
         return {}
 
     async def check_pokemon(self):
-        await self.p.send_intent("tesmath.calcy.ACTION_ANALYZE_SCREEN", "tesmath.calcy/.IntentReceiver", [["silentMode", True]])
+        await self.p.send_intent("tesmath.calcy.ACTION_ANALYZE_SCREEN", "tesmath.calcy/.IntentReceiver", [["silentMode", True], ["--user", self.args.user]])
         red_bar = False
         values = {}
         while True:
@@ -400,6 +400,8 @@ if __name__ == '__main__':
                         help='Config file location.')
     parser.add_argument('--touch-paste', default=False, action='store_true',
                         help='Use touch instead of keyevent for paste.')
+    parser.add_argument('--user', type=int, default=0,
+                        help='Use a cloned CalcyIV from a different phone user. Useful for sandboxing apps like Island, where you could run two instances simultaneously.')
     parser.add_argument('--pid-name', default=None, type=str,
                         help='Create pid file')
     parser.add_argument('--pid-dir', default=None, type=str,
