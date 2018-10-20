@@ -1,36 +1,71 @@
 locations:
-    rename: [539, 936]
+    rename: [530, 880]
     next: [980, 280]
     keyboard_ok: [933, 1085]
     rename_ok: [540, 1050]
-    close_calcy_dialog: [966, 1092]
+    close_calcy_dialog: [880, 1160]
     edit_box: [90, 1090] # only used with --touch-paste
     paste: [483, 1092] # only used with --touch-paste
-    favorite_button: [980, 156]
+    favorite_button: [970, 160]
     favorite_button_box: [960, 142, 1001, 180]
-    pokemon_menu_button: [933, 1777]
-    appraise_button: [934, 1377]
+    pokemon_menu_button: [940, 1700]
+    appraise_button: [940, 1315]
     continue_appraisal: [590, 1770]
     calcy_appraisal_save_button: [855, 1149]
     dismiss_calcy: [555, 1296]
-    appraisal_box: [45, 1664, 1032, 1872]
+    appraisal_box: [45, 1594, 1032, 1792]
 
 waits:
-    next: 0.5
+    next: 0.7
     rename: 0.5
     rename_ok: 1
     pokemon_menu_button: 1
     appraise_button: 1
 
 blacklist:
-    - Charizard
-    - Wailmer
+    - Pidgey
+    - Weedle
+    - Whishmur
+    - Wurmple
+    - Caterpie
 
 actions:
+    - conditions:
+        blacklist: true
+    - conditions:
+        success: false
+      actions:
+        rename: "!FAILED"
+    - conditions:
+        iv:
+        iv_min__eq: 0
+        appraised: false
+      actions:
+        appraise:
+    - conditions:
+        iv:
+        iv_max__ge: 90
+        appraised: false
+        blacklist: false
+      actions:
+        appraise:
+    - conditions:
+        name__in:
+          - Tyranitar
+          - Bagon
+          - Dragonite
+          - Beldum
+          - Dratini
+          - Ralts
+          - Machamp
+        iv_max__lt: 90
+      actions:
+        rename: "•TRADE"
+    - conditions:
+        iv_max__lt: 90
     - actions:
         rename-calcy: # Rename normally
 
-
 iv_regexes:
-    - ^(?P<iv_min>\d+)\-(?P<iv_max>\d+).*$
-    - ^(?P<iv>\d+).*$
+    - ^.[A-z\.]+(?P<iv>\d+) .*$
+    - ^.[A-z\.]+(?P<iv_min>\d+)\-(?P<iv_max>\d+) .*$
