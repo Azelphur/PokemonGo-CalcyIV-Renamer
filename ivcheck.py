@@ -128,6 +128,8 @@ class Main:
 
     async def get_data_from_clipboard(self):
         clipboard = await self.p.get_clipboard()
+        logger.debug('Device clipboard is: ' + clipboard)
+        logger.debug('Normalized clipboard is: ' + unicodedata.normalize('NFKD', clipboard))
 
         for iv_regex in self.iv_regexes:
             # unicodedata replaces unicode characters like '¹' (u'\xb9')
@@ -135,6 +137,7 @@ class Main:
             # Works with most (if not all) of CalcyIV's numeric schemes.
             match = iv_regex.match(unicodedata.normalize('NFKD', clipboard))
             if match:
+                logger.debug('Clipboard matched against ' + str(iv_regex))
                 d = match.groupdict()
                 if "iv" in d:
                     d["iv"] = float(d["iv"])
