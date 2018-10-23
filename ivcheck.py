@@ -60,7 +60,7 @@ class Main:
             duration
         )
         if location in self.config['waits']:
-            await asyncio.sleep(self.config['waits'][location])   
+            await asyncio.sleep(self.config['waits'][location])
 
     async def start(self):
         self.p = PokemonGo()
@@ -109,11 +109,16 @@ class Main:
                     if args.touch_paste:
                         await self.swipe('edit_box', 600)
                         await self.tap('paste')
-
                     else:
                         await self.p.key(279) # Paste into rename
                 elif "rename" in actions:
-                    await self.p.text(actions["rename"])
+                    await self.p.send_intent("clipper.set", extra_values=[["text", actions["rename"]]])
+
+                    if args.touch_paste:
+                        await self.swipe('edit_box', 600)
+                        await self.tap('paste')
+                    else:
+                        await self.p.key(279)  # Paste into rename
 
                 await self.tap('keyboard_ok')
                 await self.tap('rename_ok')
@@ -147,7 +152,7 @@ class Main:
         """
         Not the best check, just search the area
         for white pixels
-        """ 
+        """
         screencap = await self.p.screencap()
         crop = screencap.crop(self.config['locations']['appraisal_box'])
         rgb_im = crop.convert('RGB')
@@ -161,13 +166,13 @@ class Main:
                 if c in colors:
                     color_count += 1
         return color_count > 100000
-  
+
 
     async def check_favorite(self):
         """
         Not the best check, just search the area
         for pixels that are the right color
-        """ 
+        """
         screencap = await self.p.screencap()
         crop = screencap.crop(self.config['locations']['favorite_button_box'])
         rgb_im = crop.convert('RGB')
@@ -272,7 +277,7 @@ class Main:
                 else:
                     logger.debug("RE_SCAN_INVALID matched, raising CalcyIVError")
                     return CALCY_SCAN_INVALID, values
-        
+
 if __name__ == '__main__':
     if platform == 'win32':
         asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())

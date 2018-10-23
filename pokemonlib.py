@@ -115,6 +115,11 @@ class PokemonGo(object):
         for key, value in extra_values:
             if isinstance(value, bool):
                 cmd = cmd + " --ez {} {}".format(key, "true" if value else "false")
+            elif '--user' in key:
+                cmd = cmd + " --user {}".format(value)
+            else:
+                cmd = cmd + " -e {} {}".format(key, value)
+        logger.info("Sending intent: " + cmd)
         await self.run(["adb", "-s", await self.get_device(), "shell", cmd])
 
     async def tap(self, x, y):
