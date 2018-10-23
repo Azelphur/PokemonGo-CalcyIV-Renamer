@@ -71,6 +71,7 @@ class Main:
         while True:
             blacklist = False
             state, values = await self.check_pokemon()
+            await self.p.seek_to_end() # just in case any additional lines are present
 
             if "name" in values and values["name"] in self.config["blacklist"]:
                 blacklist = True

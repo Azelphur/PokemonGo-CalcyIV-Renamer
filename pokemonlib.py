@@ -86,6 +86,14 @@ class PokemonGo(object):
         )
         await self.logcat_task.stdout.readline() # Read and discard the one line as -T 0 doesn't work
 
+    async def seek_to_end(self):
+        # Seek to the end of the file
+        while True:
+            try:
+                task = await asyncio.wait_for(self.logcat_task.stdout.readline(), 0.2)
+            except asyncio.TimeoutError:
+                break
+
     async def read_logcat(self):
         if self.logcat_task.returncode != None:
             logger.error("Logcat process is not running")
