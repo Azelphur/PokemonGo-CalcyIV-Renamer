@@ -146,7 +146,7 @@ class Main:
                     d["iv"] = None
                 return d
 
-        raise Exception("Clipboard regex did not match")
+        raise Exception("Clipboard regex did not match, got "+clipboard)
 
     async def check_appraising(self):
         """
@@ -255,13 +255,15 @@ class Main:
             match = RE_CALCY_IV.match(line)
             if match:
                 logger.debug("RE_CALCY_IV matched")
-                result = match.groupdict()
+                values = match.groupdict()
                 state = CALCY_SUCCESS
-                if "-1" in [result["cp"], result["level"]]:
+                if "-1" in [values["cp"], values["level"]]:
                     state = CALCY_SCAN_INVALID
-                if red_bar is True:
+                elif red_bar is True:
                     state = CALCY_RED_BAR
-                return state, result
+                    return state, values
+                else:
+                    return state, values
 
             match = RE_RED_BAR.match(line)
 
