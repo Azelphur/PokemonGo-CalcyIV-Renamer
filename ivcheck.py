@@ -111,13 +111,16 @@ class Main:
                     if args.touch_paste:
                         await self.swipe('edit_box', 600)
                         await self.tap('paste')
-
                     else:
                         await self.p.key(279) # Paste into rename
                 elif "rename" in actions:
-                    # await self.p.text(actions["rename"])
                     await self.p.send_intent("clipper.set", extra_values=[["text", actions["rename"]]])
-                    await self.p.key(279)  # Paste into rename
+
+                    if args.touch_paste:
+                        await self.swipe('edit_box', 600)
+                        await self.tap('paste')
+                    else:
+                        await self.p.key(279)  # Paste into rename
 
                 await self.tap('keyboard_ok')
                 await self.tap('rename_ok')
@@ -151,7 +154,7 @@ class Main:
                     d["iv"] = None
                 return d
 
-        raise Exception("Clipboard regex did not match")
+        raise Exception("Clipboard regex did not match, got "+clipboard)
 
     async def check_appraising(self):
         """
@@ -228,7 +231,7 @@ class Main:
                 operator = None
                 if "__" in key:
                     key, operator = key.split("__")
-                if key in clipboard_required:
+                if key in clipboard_required and clipboard_values is None:
                     clipboard_values = await self.get_data_from_clipboard()
                     values = {**values, **clipboard_values}
                 if key not in valid_conditions:
@@ -260,13 +263,15 @@ class Main:
             match = RE_CALCY_IV.match(line)
             if match:
                 logger.debug("RE_CALCY_IV matched")
-                result = match.groupdict()
+                values = match.groupdict()
                 state = CALCY_SUCCESS
-                if "-1" in [result["cp"], result["level"]]:
+                if "-1" in [values["cp"], values["level"]]:
                     state = CALCY_SCAN_INVALID
-                if red_bar is True:
+                elif red_bar is True:
                     state = CALCY_RED_BAR
-                return state, result
+                    return state, values
+                else:
+                    return state, values
 
             match = RE_RED_BAR.match(line)
 
