@@ -223,7 +223,7 @@ class Main:
                 operator = None
                 if "__" in key:
                     key, operator = key.split("__")
-                if key in clipboard_required:
+                if key in clipboard_required and clipboard_values is None:
                     clipboard_values = await self.get_data_from_clipboard()
                     values = {**values, **clipboard_values}
                 if key not in valid_conditions:
