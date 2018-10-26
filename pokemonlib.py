@@ -114,7 +114,7 @@ class PokemonGo(object):
             line = await self.read_logcat()
             match = RE_CLIPBOARD_TEXT.match(line)
             if match:
-                logger.INFO("RE_CLIPBOARD_TEXT matched.")
+                logger.info("RE_CLIPBOARD_TEXT matched.")
                 return match.group(1)
 
     async def send_intent(self, intent, package=None, extra_values=[]):
