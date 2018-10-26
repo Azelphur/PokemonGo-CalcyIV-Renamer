@@ -5,7 +5,7 @@ This is a small script which uses adb to send touch and key events to your phone
 This script essentially blindly sends touch events to your phone. If a popup appears over where the script thinks a button is, or if your phone lags, it can do unintended things. Please keep an eye on your phone while it is running. If it transfers your shiny 100% dragonite, it's because you weren't watching it.
 
 # Usage
-Simply download the files, edit config.yaml for your phone, and run `python ivcheck.py`. Make sure you are using Python >= 3.7.
+Download the files, edit config.yaml for your phone, and run `python ivcheck.py`. Make sure you are using Python >= 3.7. Install and start https://github.com/majido/clipper on your phone (this script gets IVs by reading them back from your phones clipboard)
 
 # Actions
 Actions allow you to define new ways of renaming your pokemon, outside of the usual Calcy IV renaming scheme. Actions are processed from first to last, and the first one to have all its conditions pass is used.
@@ -18,6 +18,14 @@ Actions allow you to define new ways of renaming your pokemon, outside of the us
 - success - Whether the calcy IV scan succeeded (true/false) (Note: Will be false if pokemon is blacklisted)
 - blacklist - Whether the pokemon is in the blacklist
 - appraised - Whether the pokemon has been appraised or not (true/false)
+- id - The pokemons pokedex ID
+- cp - The pokemons CP
+- max_hp - The pokemons max hp
+- dust_cost - The dust cost to power up
+- level - The pokemons level (1-40)
+- fast_move - The pokemons fast move (usually only visible on fully evolved pokemon)
+- special_move - The pokemons special/charged move (usually only visible on fully evolved pokemon)
+- gender - The pokemons gender (1 = male, 2 = female)
 
 Conditions also support the following operators:
 - lt - Less than

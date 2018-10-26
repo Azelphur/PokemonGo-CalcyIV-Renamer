@@ -213,7 +213,11 @@ class Main:
 
     async def get_actions(self, values):
         clipboard_values = None
-        valid_conditions = ["name", "iv", "iv_min", "iv_max", "success", "blacklist", "appraised"]
+        valid_conditions = [
+            "name", "iv", "iv_min", "iv_max", "success", "blacklist",
+            "appraised", "id", "cp", "max_hp", "dust_cost", "level",
+            "fast_move", "special_move", "gender"
+        ]
         clipboard_required = ["iv", "iv_min", "iv_max"]
         for ruleset in self.config["actions"]:
             conditions = ruleset.get("conditions", {})
@@ -226,6 +230,16 @@ class Main:
                 if key in clipboard_required and clipboard_values is None:
                     clipboard_values = await self.get_data_from_clipboard()
                     values = {**values, **clipboard_values}
+
+                if isinstance(values[key], str):
+                    if values[key].isnumeric():
+                        values[key] = int(values[key])
+                    else:
+                        try:
+                            values[key] = float(values[key])
+                        except ValueError:
+                            pass
+
                 if key not in valid_conditions:
                     raise Exception("Unknown Condition {}".format(key))
                 if key not in values:
