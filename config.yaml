@@ -11,8 +11,8 @@ locations:
     pokemon_menu_button: [940, 1700]
     appraise_button: [940, 1315]
     continue_appraisal: [590, 1770]
-    calcy_appraisal_save_button: [855, 1149]
-    dismiss_calcy: [555, 1296]
+    calcy_appraisal_save_button: [880, 920]
+    dismiss_calcy: [870, 1160]
     appraisal_box: [45, 1594, 1032, 1792]
 
 waits:
@@ -23,19 +23,18 @@ waits:
     appraise_button: 1
 
 blacklist:
-    - Pidgey
-    - Weedle
-    - Whishmur
-    - Wurmple
-    - Caterpie
+    -
 
 actions:
-    - conditions:
-        blacklist: true
     - conditions:
         success: false
       actions:
         rename: "!FAILED"
+    - conditions:
+        name__in:
+          - Unown
+      actions:
+        rename: "‽Unown"
     - conditions:
         iv:
         iv_min__eq: 0
@@ -46,7 +45,6 @@ actions:
         iv:
         iv_max__ge: 90
         appraised: false
-        blacklist: false
       actions:
         appraise:
     - conditions:
@@ -67,5 +65,5 @@ actions:
         rename-calcy: # Rename normally
 
 iv_regexes:
-    - ^.[A-z\.]+(?P<iv>\d+) .*$
-    - ^.[A-z\.]+(?P<iv_min>\d+)\-(?P<iv_max>\d+) .*$
+    - ^.+     (?P<iv>\d+)$
+    - ^.+     (?P<iv_min>\d+)\-(?P<iv_max>\d+)$
