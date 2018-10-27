@@ -86,7 +86,6 @@ class Main:
             values["success"] = True if state == CALCY_SUCCESS and blacklist == False else False
             values["blacklist"] = blacklist
             values["appraised"] = False
-
             actions = await self.get_actions(values)
             if "appraise" in actions:
                 await self.tap("pokemon_menu_button")
@@ -271,8 +270,8 @@ class Main:
                 logger.debug("RE_CALCY_IV matched")
                 values = match.groupdict()
                 state = CALCY_SUCCESS
-                if "-1" in [values["cp"], values["level"]]:
-                    state = CALCY_SCAN_INVALID
+                if values['cp'] == '-1' or values['level'] == '-1.0':
+                    pass
                 elif red_bar is True:
                     state = CALCY_RED_BAR
                     return state, values
@@ -317,3 +316,4 @@ if __name__ == '__main__':
             asyncio.run(Main(args).start())
     else:
         asyncio.run(Main(args).start())
+
