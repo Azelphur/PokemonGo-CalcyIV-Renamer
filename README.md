@@ -1,5 +1,5 @@
 # Discord for support/development/shenaigans:
-https://discord.gg/MZh27Y
+https://discord.gg/skUAWKg
 
 # Description
 This is a small script which uses adb to send touch and key events to your phone, in combination with Calcy IV it can automatically rename all of your pokemon. This script doesn't login to the pokemon go servers using the "unofficial API" and only relies on an Android phone (sorry, iPhone users). The upside to this is that you're very unlikely to get banned for using it. The downside is that it's a lot slower, and that you can't use your phone while it's running.
