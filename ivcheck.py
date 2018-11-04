@@ -93,7 +93,7 @@ class Main:
                 await self.tap("pokemon_menu_button")
                 await self.tap("appraise_button")
                 await self.p.send_intent("tesmath.calcy.ACTION_ANALYZE_SCREEN", "tesmath.calcy/.IntentReceiver", [["silentMode", True]])
-                for i in range(0, 3):
+                for i in range(0, 4):  # we can do it four times before beggining to screencap
                     await self.tap("continue_appraisal")
                 while await self.check_appraising():
                     await self.tap("continue_appraisal")
@@ -119,10 +119,10 @@ class Main:
                         await self.swipe('edit_box', 600)
                         await self.tap('paste')
                     else:
-                        await self.p.key(279)  # Paste into rename
-
-                await self.tap('keyboard_ok')
-                await self.tap('rename_ok')
+                        await self.p.key('KEYCODE_PASTE')  # Paste into rename
+                # await self.tap('keyboard_ok')  # Instead of yet another tap, use keyevents for reliability
+                await self.p.key('KEYCODE_TAB')
+                await self.p.key('KEYCODE_ENTER')
             if "favorite" in actions:
                 if not await self.check_favorite():
                     await self.tap('favorite_button')
