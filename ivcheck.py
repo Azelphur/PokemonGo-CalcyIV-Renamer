@@ -103,7 +103,7 @@ class Main:
                 actions = await self.get_actions(values)
                 await self.tap("dismiss_calcy")
 
-            if "rename" in actions or "rename-calcy" in actions:
+            if "rename" in actions or "rename-calcy" in actions or "rename-prefix" in actions:
                 if values["success"] is False:
                     await self.tap('close_calcy_dialog') # it gets in the way
                 await self.tap('rename')
@@ -121,6 +121,17 @@ class Main:
                         await self.tap('paste')
                     else:
                         await self.p.key(279)  # Paste into rename
+                elif "rename-prefix" in actions:
+                    if args.touch_paste:
+                        await self.swipe('edit_box', 600)
+                        await self.tap('paste')
+                    else:
+                        await self.p.key(279)  # Paste into rename
+
+                    await self.p.key('KEYCODE_MOVE_HOME')
+                    await self.p.send_intent("clipper.set", extra_values=[["text", actions["rename-prefix"]]])
+                    await self.p.key(279)  # Paste into beggining of string
+
 
                 await self.tap('keyboard_ok')
                 await self.tap('rename_ok')
