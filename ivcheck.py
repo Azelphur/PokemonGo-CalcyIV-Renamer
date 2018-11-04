@@ -123,6 +123,7 @@ class Main:
                 # await self.tap('keyboard_ok')  # Instead of yet another tap, use keyevents for reliability
                 await self.p.key('KEYCODE_TAB')
                 await self.p.key('KEYCODE_ENTER')
+                await self.tap('rename_ok')
             if "favorite" in actions:
                 if not await self.check_favorite():
                     await self.tap('favorite_button')
