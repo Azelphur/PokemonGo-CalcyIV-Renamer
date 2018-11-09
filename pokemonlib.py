@@ -118,7 +118,7 @@ class PokemonGo(object):
             elif '--user' in key:
                 cmd = cmd + " --user {}".format(value)
             else:
-                cmd = cmd + " -e {} {}".format(key, value)
+                cmd = cmd + " -e {} '{}'".format(key, value)
         logger.info("Sending intent: " + cmd)
         await self.run(["adb", "-s", await self.get_device(), "shell", cmd])
 
