@@ -55,7 +55,7 @@ actions:
     actions:
       rename: ".FAILED"
   - conditions:
-      iv_max__gte: 90
+      iv_max__ge: 90
     actions:
       rename-calcy:
 ```
