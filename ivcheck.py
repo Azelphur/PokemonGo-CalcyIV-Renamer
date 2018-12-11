@@ -5,6 +5,7 @@ import re
 import argparse
 import logging
 import operator
+import os.path
 from sys import platform
 
 
@@ -39,11 +40,28 @@ CALCY_SUCCESS = 0
 CALCY_RED_BAR = 1
 CALCY_SCAN_INVALID = 2
 
+class Loader(yaml.SafeLoader):
+
+    def __init__(self, stream):
+
+        self._root = os.path.split(stream.name)[0]
+
+        super(Loader, self).__init__(stream)
+
+    def include(self, node):
+
+        filename = os.path.join(self._root, self.construct_scalar(node))
+
+        with open(filename, 'r') as f:
+            return yaml.load(f, Loader)
+
+Loader.add_constructor('!include', Loader.include)
+
 
 class Main:
     def __init__(self, args):
         with open(args.config, "r") as f:
-            self.config = yaml.load(f)
+            self.config = yaml.load(f, Loader)
         self.args = args
         self.use_fallback_screenshots = False
         self.iv_regexes = [re.compile(r) for r in self.config["iv_regexes"]]
