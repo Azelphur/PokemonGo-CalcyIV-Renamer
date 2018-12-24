@@ -267,7 +267,7 @@ class Main:
                     break
             if passed:
                 return ruleset.get("actions", {})
-        raise Exception("No action matched")
+        return {}
 
     async def check_pokemon(self):
         await self.p.send_intent("tesmath.calcy.ACTION_ANALYZE_SCREEN", "tesmath.calcy/.IntentReceiver", [["silentMode", True]])
