@@ -8,7 +8,14 @@ This is a small script which uses adb to send touch and key events to your phone
 This script essentially blindly sends touch events to your phone. If a popup appears over where the script thinks a button is, or if your phone lags, it can do unintended things. Please keep an eye on your phone while it is running. If it transfers your shiny 100% dragonite, it's because you weren't watching it.
 
 # Usage
-Download the files, edit config.yaml for your phone, and run `python ivcheck.py`. Make sure you are using Python >= 3.7. Install and start https://github.com/majido/clipper on your phone (this script gets IVs by reading them back from your phones clipboard)
+- Download the files from this repository
+- Install adb, make sure it's on your systems PATH, alternatively you can place adb in the same folder as main.py
+- Install [clipper](https://github.com/majido/clipper) and start the service
+- Install Python >=3.7 (older versions will not work)
+- Run pip install -r requirements.txt
+- Either change your Calcy IV renaming string to `$IV%Range$$MoveTypes$$AttIV$$DefIV$$HpIV$$Appraised$`, or change your iv_regexes setting to match your renaming scheme
+- Edit config.yaml locations for your phone (The defaults are for a oneplus 3T and should work with any 1080p phone that does not have soft buttons). Each setting is an X,Y location. You can turn on Settings > Developer options > Pointer location to assist you in gathering X,Y locations. Each location setting has a corresponding screenshot in docs/locations.
+- Once you've done all that, run `python ivcheck.py`
 
 # Actions
 Actions allow you to define new ways of renaming your pokemon, outside of the usual Calcy IV renaming scheme. Actions are processed from first to last, and the first one to have all its conditions pass is used.
@@ -40,8 +47,7 @@ Conditions also support the following operators:
 - in - In list
 
 **Actions:**
-- rename-calcy - Rename and paste into the edit box, uses Calcy IVs naming scheme
-- rename - Allows you to specify your own name for the pokemon
+- rename - Allows you to specify your own name for the pokemon. You can also use any of the above conditions as variables. For example `{name} {iv}`. In addition, there is also a {calcy} variable, which contains Calcys suggested name.
 - favorite - Favorite the pokemon
 - appraise - Appraise the pokemon
 
@@ -57,7 +63,7 @@ actions:
   - conditions:
       iv_max__ge: 90
     actions:
-      rename-calcy:
+      rename: "{calcy}"
 ```
 
 Rename bad IV Abra, Gastly and Machop to ".TRADE" so you can trade them later.
@@ -72,75 +78,11 @@ Rename bad IV Abra, Gastly and Machop to ".TRADE" so you can trade them later.
         rename: ".TRADE"
 ```
 
-An example of the actions I currently use. I haven't finished fleshing it out yet, but it's a bit more advanced and gives you an idea on what you can do, the rules, in order, do the following:
-
-- Rename any pokemon that fail to scan as ".FAILED".
-- If it hasn't been appraised, and it's possibly 0 IV, appraise it.
-- If its 0 or 100 IV, favorite it and rename it using calcy.
-- If it has a possibility of being greater than 90 IV, appraise it.
-- If it's an Abra, Kadabra, Exeggcute, Gastly, ... and it's less than 90 IV, rename it to ".TRADE" so I can easily trade it later.
-- If it's a Mewtwo, Alolan Raichu, Spinda, ... use calcy to rename it.
-- If it's less than 90 IV, don't bother renaming it. This saves time.
-- If all else fails, use calcy to rename it.
-
-```actions:
-    - conditions:
-        success: false
-      actions:
-        rename: ".FAILED"
-    - conditions:
-        iv:
-        iv_min__eq: 0
-        appraised: false
-      actions:
-        appraise:
-    - conditions:
-        iv__in: [0, 100]
-      actions:
-        favorite:
-        rename-calcy:
-    - conditions:
-        iv:
-        iv_max__ge: 90
-        appraised: false
-      actions:
-        appraise:
-    - conditions:
-        name__in:
-          - Abra
-          - Kadabra
-          - Exeggcute
-          - Gastly
-          - Machop
-          - Ralts
-          - Magikarp
-          - Eevee
-          - Kirlia
-          - Electabuzz
-        iv_max__lt: 90
-      actions:
-        rename: ".TRADE"
-    - conditions:
-        name__in: 
-          - Mewtwo
-          - Raichu Alolan
-          - Spinda
-          - Chansey
-      actions:
-        rename-calcy:
-    - conditions:
-        iv_max__le: 90
-    - actions:
-        rename-calcy: # Rename normally
-```
-
-
-
 # (probably) FAQ
 * It taps in the wrong locations / doesn't work
 ... You probably need to edit the locations in config.yaml, it's configured for a 1080p phone.
 * It's going too fast for my phone
-... This was developed and tested on a OnePlus 3T, so the script runs quite fast. You can slow it down by editing config.yaml
+... This was developed and tested on a OnePlus 3T, so the script runs quite fast. You can slow it down by editing the `waits` section in config.yaml
 * It's not pasting the pokemons name
 ... For some reason the paste key event doesn't work on some phones, use the --nopaste argument to fix it.
 * Can it do multiple phones at the same time
