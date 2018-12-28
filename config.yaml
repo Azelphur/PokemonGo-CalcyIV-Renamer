@@ -23,8 +23,11 @@ waits:
     appraise_button: 1
 
 blacklist:
-    - Charizard
-    - Wailmer
+  - Charizard
+  - Wailmer
+  - Exeggutor Alolan
+  - Lugia
+  - Groudon
 
 actions:
     - actions:
