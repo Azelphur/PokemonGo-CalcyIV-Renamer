@@ -86,6 +86,7 @@ class Main:
         self.p = PokemonGo()
         await self.p.set_device(self.args.device_id)
         await self.p.start_logcat()
+        count = 0
         num_errors = 0
         while True:
             blacklist = False
@@ -140,6 +141,10 @@ class Main:
             if "favorite" in actions:
                 if not await self.check_favorite():
                     await self.tap('favorite_button')
+            count += 1
+            if args.stop_after is not None and count >= args.stop_after:
+                logger.info("Stop_after reached, stopping")
+                return
             await self.tap('next')
 
 
@@ -324,6 +329,8 @@ if __name__ == '__main__':
                         help="Create pid file")
     parser.add_argument('--pid-dir', default=None, type=str,
                         help="Change default pid directory")
+    parser.add_argument('--stop-after', default=None, type=int,
+                        help="Stop after X pokemon")
     args = parser.parse_args()
     if args.pid_name is not None:
         from pid import PidFile
