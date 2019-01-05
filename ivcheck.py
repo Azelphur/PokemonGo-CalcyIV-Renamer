@@ -60,11 +60,8 @@ Loader.add_constructor('!include', Loader.include)
 
 class Main:
     def __init__(self, args):
-        with open(args.config, "r") as f:
-            self.config = yaml.load(f, Loader)
         self.args = args
         self.use_fallback_screenshots = False
-        self.iv_regexes = [re.compile(r) for r in self.config["iv_regexes"]]
 
     async def tap(self, location):
         await self.p.tap(*self.config['locations'][location])
@@ -84,7 +81,22 @@ class Main:
 
     async def start(self):
         self.p = PokemonGo()
-        await self.p.set_device(self.args.device_id)
+        if self.args.device_id is None:
+            await self.p.get_device()
+        else:
+            await self.p.set_device(self.args.device_id)
+
+        path = "config.yaml"
+        device_path = await self.p.get_device()+".yaml"
+        if self.args.config is None and os.path.exists(device_path):
+            path = device_path
+        elif self.args.config is not None:
+            path = self.args.config
+
+        with open(path, "r") as f:
+            self.config = yaml.load(f, Loader)
+            print(path, self.config)
+        self.iv_regexes = [re.compile(r) for r in self.config["iv_regexes"]]
         await self.p.start_logcat()
         num_errors = 0
         while True:
@@ -117,6 +129,9 @@ class Main:
                     await self.tap("continue_appraisal")
                 await self.tap("calcy_appraisal_save_button")
                 values["appraised"] = True
+                clipboard, clipboard_values = await self.get_data_from_clipboard()
+                values = {**values, **clipboard_values}
+                values["calcy"] = clipboard
                 actions = await self.get_actions(values)
                 await self.tap("dismiss_calcy")
 
@@ -266,6 +281,8 @@ class Main:
                     passed = False
                     break
             if passed:
+                print("MATCHED", ruleset)
+                print(values)
                 return ruleset.get("actions", {})
         return {}
 
@@ -316,7 +333,7 @@ if __name__ == '__main__':
                         help="Optional, if not specified the phone is automatically detected. Useful only if you have multiple phones connected. Use adb devices to get a list of ids.")
     parser.add_argument('--max-retries', type=int, default=5,
                         help="Maximum retries, set to 0 for unlimited.")
-    parser.add_argument('--config', type=str, default="config.yaml",
+    parser.add_argument('--config', type=str, default=None,
                         help="Config file location.")
     parser.add_argument('--touch-paste', default=False, action='store_true',
                         help="Use touch instead of keyevent for paste.")
