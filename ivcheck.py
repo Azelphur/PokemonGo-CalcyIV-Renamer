@@ -12,6 +12,8 @@ from sys import platform
 def in_func(a, b):
     return a in b
 
+def not_in_func(a, b):
+    return a not in b
 
 ops = {
     'lt': operator.lt,
@@ -21,6 +23,7 @@ ops = {
     'ge': operator.ge,
     'gt': operator.gt,
     'in': in_func,
+    'not_in': not_in_func,
 }
 
 logger = logging.getLogger('ivcheck')
