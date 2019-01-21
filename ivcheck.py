@@ -301,11 +301,6 @@ class Main:
         return color_count > 500
 
     async def get_actions(self, values):
-        valid_conditions = [
-            "name", "iv", "iv_min", "iv_max", "success", "blacklist",
-            "appraised", "id", "cp", "max_hp", "dust_cost", "level",
-            "fast_move", "special_move", "gender", "catch_year"
-        ]
         for ruleset in self.config["actions"]:
             conditions = ruleset.get("conditions", {})
             # Check if we need to read the clipboard
@@ -324,8 +319,6 @@ class Main:
                         except ValueError:
                             pass
 
-                if key not in valid_conditions:
-                    raise Exception("Unknown Condition {}".format(key))
                 if key not in values:
                     passed = False
                     break
