@@ -140,7 +140,7 @@ class Main:
             await self.p.get_device()
         else:
             await self.p.set_device(self.args.device_id)
-        if args.copy_calcy:
+        if self.args.copy_calcy:
             await self.p.send_intent("clipper.set", extra_values=[["text", CALCY_STRING]])
             return False
 
