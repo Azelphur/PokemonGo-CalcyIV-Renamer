@@ -22,12 +22,7 @@ waits:
     pokemon_menu_button: 1
     appraise_button: 1
 
-blacklist:
-  - Charizard
-  - Wailmer
-  - Exeggutor Alolan
-  - Lugia
-  - Groudon
+blacklist: !include blacklist.yaml
 
 actions:
     - actions:
