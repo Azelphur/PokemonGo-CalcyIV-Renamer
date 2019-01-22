@@ -134,7 +134,7 @@ class Main:
         if location in self.config['waits']:
             await asyncio.sleep(self.config['waits'][location])
 
-    async def start(self):
+    async def setup(self):
         self.p = PokemonGo()
         if self.args.device_id is None:
             await self.p.get_device()
@@ -142,7 +142,7 @@ class Main:
             await self.p.set_device(self.args.device_id)
         if args.copy_calcy:
             await self.p.send_intent("clipper.set", extra_values=[["text", CALCY_STRING]])
-            return
+            return False
 
         path = "config.yaml"
         device_path = await self.p.get_device()+".yaml"
@@ -155,6 +155,10 @@ class Main:
             self.config = yaml.load(f, Loader)
 
         await self.p.start_logcat()
+
+    async def start(self):
+        if await self.setup() == False:
+             return
         count = 0
         num_errors = 0
         while True:
