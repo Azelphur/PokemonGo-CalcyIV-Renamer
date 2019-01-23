@@ -1,0 +1,49 @@
+# For this, search for "shiny" and run.
+# For best results set calcy as: $NameShort$$IV_AVG$, the script takes care of the leading symbols
+
+actions:
+    # Nobrainer:
+    - conditions:
+        success: false
+      actions:
+        rename: "! Verify"
+
+    # For any potential IV greater than 80 appraise it, without renaming yet.
+    - conditions:
+        iv:
+        iv_max__ge: 80
+        appraised: false
+      actions:
+        appraise:
+
+    # From now on, every pokemon with potential IV>80 will have the best IV value possible,
+    #  so we can start renaming based on our rules. Pokemons with max IVs of less than 80 are still
+    #  not refined. If you care, just remove 'iv_max__ge: 80' below and it will appraise every pokemon
+    #  that has an IV Range.
+
+    # Lets begin renaming!
+
+    # If IV was 100, so, a freaking shundo, rename like this:
+    - conditions:
+        iv__eq: 100
+      actions:
+        rename: "¡ {calcy}"
+
+    # Otherwise, pokemons with IV greater than 80 (that aren't the ones below) get renamed as follow:
+    - conditions:
+        iv_max__ge: 80
+      actions:
+        rename: "+ {calcy}"
+
+    # Every other shiny that's IV 79 or less gets renamed like so:
+    - conditions:
+        iv_max__lt: 80
+      actions:
+        rename: "± {calcy}"
+
+    # Renames anything else that doesn't matches any rule above, which shouldn't happen.
+    #   The script should never get here, but this is good practice: if you find a pomemon
+    #   renamed like this it means there was an error in your logic below and the pokemon
+    #   didn't match any condition.
+    - actions:
+        rename: "¿ {calcy}"
