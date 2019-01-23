@@ -62,9 +62,11 @@ def int_filter(c):
         pass
     for number_set in NUMBER_SETS:
         try:
-            return number_set.index(c)
+            chars = [number_set.index(char) for char in c]
         except ValueError:
             pass
+        else:
+            return int(''.join(map(str, chars)))
     raise ValueError('Unrecognised number format %s', c)
 
 def bool_filter(c):
