@@ -236,7 +236,7 @@ class Main:
                 values[name] = data[i]
             else:
                 values[name] = function(data[i])
-        values['iv_avg'] = (values['iv_min'] + values['iv_max']) / 2
+        values['iv_avg'] = int((values['iv_min'] + values['iv_max']) / 2)
         values['iv'] = values['iv_min'] if values['iv_min'] == values['iv_max'] else None
 
         return calcy, values
