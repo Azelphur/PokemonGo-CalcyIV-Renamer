@@ -13,7 +13,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-RE_CLIPBOARD_TEXT = re.compile("^./ClipboardReceiver\(\s*\d+\): Clipboard text: (.+)$")
+RE_CLIPBOARD_TEXT = re.compile(r"^./ClipboardReceiver\(\s*\d+\): Clipboard text: (.+)$")
 
 class CalcyIVError(Exception):
     pass
