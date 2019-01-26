@@ -1,0 +1,55 @@
+locations:
+    rename: [530, 880]
+    next: [980, 280]
+    keyboard_ok: [933, 1085]
+    rename_ok: [540, 1050]
+    close_calcy_dialog: [880, 1160]
+    edit_box: [90, 1090] # only used with --touch-paste
+    paste: [483, 1092] # only used with --touch-paste
+    favorite_button: [970, 160]
+    favorite_button_box: [960, 142, 1001, 180]
+    pokemon_menu_button: [940, 1700]
+    appraise_button: [940, 1315]
+    continue_appraisal: [540, 1100]
+    calcy_appraisal_save_button: [880, 800]
+    dismiss_calcy: [540, 1170]
+    appraisal_box: [45, 1594, 1032, 1792]
+
+# Quick ones (without spoofer)
+waits:
+    next: 0.8
+    rename: 0.5
+    rename_ok: 1.2
+    pokemon_menu_button: 0.6
+    appraise_button: 1
+    calcy_appraisal_save_button: 3
+    continue_appraisal: 0.03
+
+# ## Slow ones
+# waits:
+#     next: 1.1
+#     rename: 1
+#     rename_ok: 2.1
+#     pokemon_menu_button: 1
+#     appraise_button: 1.4
+#     calcy_appraisal_save_button: 7 #4
+#     continue_appraisal: 0.05
+
+blacklist:
+    -
+
+actions:
+    # Failed scans get renamed for later verification
+    - conditions:
+        success: false
+      actions:
+        rename: "!ManualCheck"
+
+    # Successful scans get renamed via Calcy
+    - conditions:
+        success: true
+
+
+iv_regexes:
+    - ^.+     (?P<iv>\d+)$
+    - ^.+     (?P<iv_min>\d+)\-(?P<iv_max>\d+)$

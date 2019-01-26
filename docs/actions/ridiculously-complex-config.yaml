@@ -1,0 +1,222 @@
+
+## This shows the complexity level that you can achieve with the renamer.
+## It's actually my true config.yaml
+
+actions:
+    # Failed scans get renamed for later verification
+    - conditions:
+        success: false
+      actions:
+        rename: "! Failed"
+
+    # Renames Unowns with prefix
+    - conditions:
+        name__in:
+          - Unown
+      actions:
+        rename: "∅ The {iv_avg}"
+
+    # Renames babies
+    - conditions:
+        name__in:
+          - Riolu
+          - Pichu
+          - Togepi
+          - Igglybuff
+          - Cleffa
+          - Elekid
+          - Smoochum
+          - Magby
+          - Budew
+          - Wynaut
+          - Tyrogue
+          - Meltan
+          - Azurill
+          - Munchlax
+          - Shinx
+      actions:
+        appraise:
+        rename: "♥ {name}{iv_avg}"
+
+    # Renames Myth/Quest/Rare/Exclusive/Cool
+    - conditions:
+        name__in:
+          - Spiritomb
+          - Spinda
+          - Shedinja
+          - Celebi
+          - Mew
+          - Castform
+      actions:
+        rename: "♦ {name}"
+
+    # High IV Legendary/ExRaid/Mythical/Meta-Relevant
+    - conditions:
+        name__in:
+          - Mewtwo
+          - Deoxys Normal
+          - Deoxys Attack
+          - Deoxys Defense
+          - Deoxys Speed
+          - Giratina Altered
+          - Articuno
+          - Zapdos
+          - Moltres
+          - Raikou
+          - Gengar
+          - Entei
+          - Suicune
+          - Ho-Oh
+          - Lugia
+          - Regirock
+          - Regice
+          - Registeel
+          - Latias
+          - Latios
+          - Kyogre
+          - Groudon
+          - Rayquaza
+          - Absol
+          - Cresselia
+          - Marowak Alolan
+          - Heltran
+        iv_max__gt: 90
+      actions:
+        rename: "×{calcy}"
+
+    # Bad Legendary/ExRaid/Mythical/Meta-Relevant
+    - conditions:
+        name__in:
+          - Mewtwo
+          - Deoxys Normal
+          - Deoxys Attack
+          - Deoxys Defense
+          - Deoxys Speed
+          - Giratina Altered
+          - Articuno
+          - Zapdos
+          - Moltres
+          - Raikou
+          - Gengar
+          - Entei
+          - Suicune
+          - Ho-Oh
+          - Lugia
+          - Regirock
+          - Regice
+          - Registeel
+          - Latias
+          - Latios
+          - Kyogre
+          - Groudon
+          - Rayquaza
+          - Absol
+          - Cresselia
+          - Marowak Alolan
+          - Heltran
+      actions:
+        rename: "{calcy}"
+
+    # Potential IV100 get appraised or renamed for later verification
+    - conditions:
+        iv_max__eq: 100
+        appraised: false
+      actions:
+        appraise:
+        # rename: "! Verify"
+
+    # Renames hundos before everything else
+    - conditions:
+        iv__eq: 100
+      actions:
+        rename: "{calcy}"
+
+    # Renames luckyegg evo pokemons (except hundos)
+    # - conditions:
+    #     name__in:
+    #       - Pidgey
+    #       - Weedle
+    #       - Whishmur
+    #       - Wurmple
+    #       - Caterpie
+    #   actions:
+    #     rename-prefix: "‰ "
+
+    # Renames everything between (max) IV95 and 100 with a prefix,
+    # for easily transfering shitty IV95-100 common pokemons afterwards
+    - conditions:
+        iv_max__ge: 95
+      actions:
+        rename: "∞ {calcy}"
+
+    # For trading (only if CP is low, high CP ones are renamed on next step)
+    - conditions:
+        cp__lt: 2000
+        name__in:
+          - Larvitar
+          - Pupitar
+          - Tyranitar
+
+          - Dratini
+          - Dragonair
+          - Dragonite
+
+          - Chansey
+          - Blissey
+
+          - Bagon
+          - Shelgon
+          - Salamence
+
+          - Beldum
+          - Metang
+          - Metagross
+
+          - Ralts
+          - Kirlia
+          - Gardevoir
+
+          - Machop
+          - Machoke
+          - Machamp
+
+          - Slakoth
+          - Feebas
+          - Snorlax
+          - Pineco
+          - Lickitung
+
+          - Gastly
+      actions:
+        rename: "Ω {calcy}"
+
+    # For trading (high cp + low IV + not meta-relevant)
+    - conditions:
+        cp__ge: 2000
+        iv_max__lt: 90
+        name__not_in:
+          - Tyranitar
+          - Dragonite
+          - Blissey
+          - Salamence
+          - Metagross
+          - Gardevoir
+          - Machamp
+          - Slaking
+          - Snorlax
+      actions:
+        rename: "Ω {calcy}"
+
+    # Skips everything else below IV95
+    - conditions:
+        iv_max__lt: 95
+
+    # Renames anything else that doesn't matches any rule above
+    #  which, in theory, shouldn't happen, so it adds a prefix to fix the rules
+    - actions:
+        rename: "¿ {calcy}"
+
+
+iv_regexes:
+    - ^.+  +(?P<iv>\d+)$
+    - ^.+  +(?P<iv_min>\d+)\-(?P<iv_max>\d+)$

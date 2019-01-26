@@ -1,0 +1,5 @@
+actions:
+    # Renames every pokemon as it's original name, while also adding the entry to Calcy.
+    # Good for using before major changes on your renaming scheme, or when it's just a mess that you'd rather start from the beggining :)
+    - actions:
+        rename: " "
