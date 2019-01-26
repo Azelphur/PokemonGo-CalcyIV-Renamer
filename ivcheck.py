@@ -42,8 +42,10 @@ RE_SCAN_INVALID = re.compile(r"^.+\(\s*\d+\): Scan invalid$")
 NAME_MAX_LEN = 12
 
 NUMBER_SETS = [
-    [chr(9450)] + [chr(i) for i in range(9312, 9332)] + [chr(i) for i in range(12881, 12896)] + [chr(i) for i in range(12977, 12992)],
-    [chr(9471)] + [chr(i) for i in range(10102, 10112)] + [chr(i) for i in range(9451, 9461)] 
+    [chr(9450)] + [chr(i) for i in range(9312, 9332)] + [chr(i) for i in range(12881, 12896)] + [chr(i) for i in range(12977, 12992)],  # white circled digits "⓪"
+    [chr(9471)] + [chr(i) for i in range(10102, 10112)] + [chr(i) for i in range(9451, 9461)],  # blank circled digits "⓿"
+    [chr(8304)] + [chr(185)] + [chr(178)] + [chr(179)] + [chr(i) for i in range(8308, 8314)],  # superscripted digits: "¹"
+    [chr(i) for i in range(8320, 8329)]  # subscripted digits: "₁"
 ]
 
 CALCY_STRING = '\u2003'*NAME_MAX_LEN + '$CatchDate$,$Lucky$,$ATT$,$DEF$,$HP$,$Gender$,$Trade$,$IV%Min$,$IV%Max$,$AttIV$,$DefIV$,$HpIV$,$FaMove$,$SpMove$,$Appraised$,$Legacy$'
@@ -62,9 +64,11 @@ def int_filter(c):
         pass
     for number_set in NUMBER_SETS:
         try:
-            return number_set.index(c)
+            chars = [number_set.index(char) for char in c]
         except ValueError:
             pass
+        else:
+            return int(''.join(map(str, chars)))
     raise ValueError('Unrecognised number format %s', c)
 
 def bool_filter(c):
