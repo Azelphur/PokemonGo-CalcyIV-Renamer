@@ -44,16 +44,16 @@ NAME_MAX_LEN = 12
 NUMBER_SETS = [
     [chr(9450)] + [chr(i) for i in range(9312, 9332)] + [chr(i) for i in range(12881, 12896)] + [chr(i) for i in range(12977, 12992)],  # white circled digits "???"
     [chr(9471)] + [chr(i) for i in range(10102, 10112)] + [chr(i) for i in range(9451, 9461)],  # blank circled digits "???"
-    [chr(8304)] + [chr(185)] + [chr(178)] + [chr(179)] + [chr(i) for i in range(8308, 8314)],  # superscripted digits: "??"
+    [chr(8304)] + [chr(185)] + [chr(178)] + [chr(179)] + [chr(i) for i in range(8308, 8314)],  # superscripted digits: "₁"
     [chr(i) for i in range(8320, 8329)]  # subscripted digits: "???"
 ]
 
 CALCY_STRING = '\u2003'*NAME_MAX_LEN + '$CatchDate$,$Lucky$,$ATT$,$DEF$,$HP$,$Gender$,$Trade$,$IV%Min$,$IV%Max$,$AttIV$,$DefIV$,$HpIV$,$FaMove$,$SpMove$,$Appraised$,$Legacy$'
 
 def gender_filter(c):
-    if c == '???':
+    if c == '♂':
         return 'M'
-    elif c == '???':
+    elif c == '♀':
         return 'F'
     return 'U'
 
