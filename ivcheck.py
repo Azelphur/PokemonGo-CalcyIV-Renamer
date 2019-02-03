@@ -34,7 +34,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-RE_CALCY_IV = re.compile(r"^./MainService\(\s*\d+\): Received values: Id: \d+ \((?P<name>.+)\), Nr: (?P<id>\d+), CP: (?P<cp>\-{0,1}\d+), Max HP: (?P<max_hp>\d+), Dust cost: (?P<dust_cost>\d+), Level: (?P<level>\-{0,1}[0-9\.]+), FastMove (?P<fast_move>.+), SpecialMove (?P<special_move>.+),Gender (?P<gender>\-{0,1}\d+), catchYear (?P<catch_year>.+), Level-up (true|false):$")
+RE_CALCY_IV = re.compile(r"^./MainService\(\s*\d+\): Received values: Id: \d+ \((?P<name>.+)\), Nr: (?P<id>\d+), CP: (?P<cp>\-{0,1}\d+), Max HP: (?P<max_hp>\d+), Dust cost: (?P<dust_cost>\d+), Level: (?P<level>\-{0,1}[0-9\.]+), FastMove (?P<fast_move>.+), SpecialMove (?P<special_move>.+), SpecialMove2 (?P<special_move2>.+),Gender (?P<gender>\-{0,1}\d+), catchYear (?P<catch_year>.+), Level-up (true|false):$")
 RE_RED_BAR = re.compile(r"^.+\(\s*\d+\): Screenshot #\d has red error box at the top of the screen$")
 RE_SUCCESS = re.compile(r"^.+\(\s*\d+\): calculateScanOutputData finished after \d+ms$")
 RE_SCAN_INVALID = re.compile(r"^.+\(\s*\d+\): Scan invalid$")
@@ -127,12 +127,23 @@ class Main:
         if location in self.config['waits']:
             await asyncio.sleep(self.config['waits'][location])
 
-    async def swipe(self, location, duration):
+    async def tap_and_hold(self, location, duration):
         await self.p.swipe(
             self.config['locations'][location][0],
             self.config['locations'][location][1],
             self.config['locations'][location][0],
             self.config['locations'][location][1],
+            duration
+        )
+        if location in self.config['waits']:
+            await asyncio.sleep(self.config['waits'][location])
+
+    async def swipe(self, location, duration):
+        await self.p.swipe(
+            self.config['locations'][location][0],
+            self.config['locations'][location][1],
+            self.config['locations'][location][2],
+            self.config['locations'][location][3],
             duration
         )
         if location in self.config['waits']:
@@ -201,6 +212,15 @@ class Main:
                 actions = await self.get_actions(values)
                 await self.tap("dismiss_calcy")
 
+            if "get_moves" in actions:
+                # If calcyiv already has both moves, then skip this action
+                if values['fast_move'] == '' or values['charge_move'] == '':
+                    await self.swipe('scroll_to_moves', 500)
+                    moves_state, moves_values = await self.check_pokemon()
+                    if 'calcy' in moves_values:
+                        values['calcy'] = moves_values['calcy']
+                    await self.swipe('scroll_to_top', 500)
+
             if "rename" in actions or "rename-calcy" in actions:
                 if values["success"] is False:
                     await self.tap('close_calcy_dialog')  # it gets in the way
@@ -210,7 +230,7 @@ class Main:
                     await self.p.send_intent("clipper.set", extra_values=[["text", actions["rename"].format(**values)]])
 
                 if args.touch_paste:
-                    await self.swipe('edit_box', 600)
+                    await self.tap_and_hold('edit_box', 600)
                     await self.tap('paste')
                 else:
                     await self.p.key('KEYCODE_PASTE')  # Paste into rename

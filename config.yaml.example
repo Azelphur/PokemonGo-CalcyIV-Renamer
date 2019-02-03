@@ -14,6 +14,8 @@ locations:
     calcy_appraisal_save_button: [855, 1000]
     dismiss_calcy: [555, 1296]
     appraisal_box: [45, 1664, 1032, 1872]
+    scroll_to_moves: [45, 1864, 45, 1200]
+    scroll_to_top: [45, 1000, 45, 1864]
 
 waits:
     next: 0.5
