@@ -51,9 +51,9 @@ NUMBER_SETS = [
 CALCY_STRING = '\u2003'*NAME_MAX_LEN + '$CatchDate$,$Lucky$,$ATT$,$DEF$,$HP$,$Gender$,$Trade$,$IV%Min$,$IV%Max$,$AttIV$,$DefIV$,$HpIV$,$FaMove$,$SpMove$,$Appraised$,$Legacy$'
 
 def gender_filter(c):
-    if c == '♂':
+    if c == chr(9794):
         return 'M'
-    elif c == '♀':
+    elif c == chr(9792):
         return 'F'
     return 'U'
 
