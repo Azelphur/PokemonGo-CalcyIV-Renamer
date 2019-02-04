@@ -169,10 +169,10 @@ class Main:
             blacklist = False
             state, values = await self.check_pokemon()
 
-            if values["name"] in self.config["blacklist"]:
-                blacklist = True
-            elif state == CALCY_SUCCESS:
+            if state == CALCY_SUCCESS:
                 num_errors = 0
+                if values["name"] in self.config["blacklist"]:
+                    blacklist = True
             elif state == CALCY_RED_BAR:
                 continue
             elif state == CALCY_SCAN_INVALID:
