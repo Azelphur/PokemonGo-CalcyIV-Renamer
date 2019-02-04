@@ -1,3 +1,10 @@
+### Feel free to suggest corrections
+### and new additions to this list in
+### the Discord: https://discord.gg/cgPgE8
+
+### BLACKLIST
+## These pokémons will always fail,
+## or even trigger false-positives.
 - Victreebel
 - Rapidash
 - Slowbro
@@ -13,31 +20,35 @@
 - Groudon
 - Rayquaza
 - Rhyperior
-- Arcanine
-- Machamp
-- Muk
-- Cloyster
-- Gastly
-- Haunter
-- Rhydon
-- Kangaskhan
-- Scyther
-- Lapras
-- Snorlax
-- Dragonite
-- Mewtwo
-- Feraligatr
-- Slowking
-- Kingdra
-- Entei
-- Suicune
-- Ho-Oh
-- Wailord
-- Milotic
-- Tropius
-- Glalie
-- Salamence
-- Kyogre
-- Torterra
-- Drifblim
-- Bronzong
+
+### GREYLIST
+## These pokémons *may* cover the arc,
+## depending on level.
+# - Arcanine
+# - Machamp
+# - Muk
+# - Cloyster
+# - Gastly
+# - Haunter
+# - Rhydon
+# - Kangaskhan
+# - Scyther
+# - Lapras
+# - Snorlax
+# - Dragonite
+# - Mewtwo
+# - Feraligatr
+# - Slowking
+# - Kingdra
+# - Entei
+# - Suicune
+# - Ho-Oh
+# - Wailord
+# - Milotic
+# - Tropius
+# - Glalie
+# - Salamence
+# - Kyogre
+# - Torterra
+# - Drifblim
+# - Bronzong
