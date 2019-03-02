@@ -171,11 +171,22 @@ class Main:
             blacklist = False
             state, values = await self.check_pokemon()
 
-            if values["name"] in self.config["blacklist"]:
+
+            if values and values["name"] in self.config["blacklist"]:
                 blacklist = True
             elif state == CALCY_SUCCESS:
                 num_errors = 0
             elif state in [CALCY_RED_BAR, CALCY_SCAN_TOO_SOON]:
+                continue
+            elif state == CALCY_SCAN_TOO_SOON:
+                num_errors += 1  # uses the same variable as CALCY_SCAN_INVALID, as they'll never happen simultaneously
+                if num_errors < args.max_retries:
+                    logger.warning("Waiting three seconds and trying again (attempt #%s)", num_errors)
+                    await asyncio.sleep(3)
+                    continue
+                logger.warning("Failed %s times in a row, trying to close a potencially stuck rename dialog...", num_errors)
+                num_errors = 0
+                await self.tap('rename_ok')
                 continue
             elif state == CALCY_SCAN_INVALID:
                 num_errors += 1
@@ -364,8 +375,11 @@ class Main:
                 logger.debug("RE_CALCY_IV matched")
                 values = match.groupdict()
                 state = CALCY_SUCCESS
-                if values['cp'] == '-1' or values['level'] == '-1.0':
-                    pass
+                if values["name"] == 'err':
+                    logger.error("Got 'err' as name, we're probably going too fast. If you get this error often, try raising 'waits -> rename_ok' in config.yaml")
+                    return CALCY_SCAN_TOO_SOON, values
+                elif values["cp"] == "-1" or values["level"] == "-1.0":
+                    logger.error("Couldnt detect CP (got %s) or arc-level (got %s)", values["cp"], values["level"])
                 elif red_bar is True:
                     state = CALCY_RED_BAR
                     return state, values
@@ -386,13 +400,13 @@ class Main:
                 if red_bar:
                     logger.debug("RE_SCAN_INVALID matched and red_bar is True")
                     return CALCY_RED_BAR, values
-                else:
-                    logger.debug("RE_SCAN_INVALID matched, raising CalcyIVError")
-                    return CALCY_SCAN_INVALID, values
+                logger.error("RE_SCAN_INVALID matched, raising CalcyIVError")
+                return CALCY_SCAN_INVALID, values
 
             match = RE_SCAN_TOO_SOON.match(line)
             if match:
-                logger.error("RE_SCAN_TOO_SOON matched, so probably .")
+                values = None
+                logger.error("RE_SCAN_TOO_SOON matched, we're probably going too fast. If you get this error often, try raising 'waits -> rename_ok' in config.yaml")
                 return CALCY_SCAN_TOO_SOON, values
 
 
