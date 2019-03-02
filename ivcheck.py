@@ -176,7 +176,7 @@ class Main:
                 blacklist = True
             elif state == CALCY_SUCCESS:
                 num_errors = 0
-            elif state in [CALCY_RED_BAR, CALCY_SCAN_TOO_SOON]:
+            elif state in CALCY_RED_BAR:
                 continue
             elif state == CALCY_SCAN_TOO_SOON:
                 num_errors += 1  # uses the same variable as CALCY_SCAN_INVALID, as they'll never happen simultaneously
