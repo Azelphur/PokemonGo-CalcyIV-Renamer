@@ -271,47 +271,64 @@ class Main:
 
 
     async def check_favorite(self):
+        """Searches the favorite_button_box area for
+        yellow pixels, and returns True if more than
+        40% of the pixels are indeed yellow. Also, if
+        the first check results in 0%, it checks twice,
+        in case some pokémon might have covered the
+        favorite button.
+
+        Returns:
+            bool -- True if pokémon was already favorited, False otherwise
         """
-        Not the best check, just search the area
-        for pixels that are the right color
-        """
-        screencap = await self.p.screencap()
-        crop = screencap.crop(self.config['locations']['favorite_button_box'])
-        rgb_im = crop.convert('RGB')
-        width, height = rgb_im.size
-        colors = [
-            (244, 192, 13),
-            (239, 182, 8),
-            (246, 193, 14),
-            (240, 184, 9),
-            (248, 198, 16),
-            (241, 184, 10),
-            (243, 188, 11),
-            (244, 191, 13),
-            (242, 188, 11),
-            (242, 186, 10),
-            (243, 189, 11),
-            (244, 191, 12),
-            (243, 189, 12),
-            (241, 186, 10),
-            (247, 197, 15),
-            (247, 196, 15),
-            (244, 190, 12),
-            (245, 193, 13),
-            (246, 194, 14),
-            (246, 195, 14),
-            (241, 185, 10),
-            (240, 183, 9),
-            (242, 187, 11),
-            (245, 192, 13),
-        ]
-        color_count = 0
-        for x in range(1, width):
-            for y in range(1, height):
-                c = rgb_im.getpixel((x, y))
-                if c in colors:
-                    color_count += 1
-        return color_count > 500
+
+        ratio = None
+        for _ in range(0, 2):
+            screencap = await self.p.screencap()
+            crop = screencap.crop(self.config['locations']['favorite_button_box'])
+            rgb_im = crop.convert('RGB')
+            width, height = rgb_im.size
+            colors = [
+                (244, 192, 13),
+                (239, 182, 8),
+                (246, 193, 14),
+                (240, 184, 9),
+                (248, 198, 16),
+                (241, 184, 10),
+                (243, 188, 11),
+                (244, 191, 13),
+                (242, 188, 11),
+                (242, 186, 10),
+                (243, 189, 11),
+                (244, 191, 12),
+                (243, 189, 12),
+                (241, 186, 10),
+                (247, 197, 15),
+                (247, 196, 15),
+                (244, 190, 12),
+                (245, 193, 13),
+                (246, 194, 14),
+                (246, 195, 14),
+                (241, 185, 10),
+                (240, 183, 9),
+                (242, 187, 11),
+                (245, 192, 13),
+            ]
+            color_count = 0
+            total_count = 0
+            for x in range(1, width):
+                for y in range(1, height):
+                    c = rgb_im.getpixel((x, y))
+                    if c in colors:
+                        color_count += 1
+                    total_count += 1
+
+            ratio = color_count / total_count
+            if color_count != 0:
+                break
+
+        logger.debug('Found %s yellow pixels from a total of %s pixels (%i%%).', color_count, total_count, 100 * ratio)
+        return ratio > 0.4
 
     async def get_actions(self, values):
         for ruleset in self.config["actions"]:
