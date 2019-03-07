@@ -34,10 +34,11 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-RE_CALCY_IV = re.compile(r"^./MainService\(\s*\d+\): Received values: Id: \d+ \((?P<name>.+)\), Nr: (?P<id>\d+), CP: (?P<cp>\-{0,1}\d+), Max HP: (?P<max_hp>\d+), Dust cost: (?P<dust_cost>\d+), Level: (?P<level>\-{0,1}[0-9\.]+), FastMove (?P<fast_move>.+), SpecialMove (?P<special_move>.+),Gender (?P<gender>\-{0,1}\d+), catchYear (?P<catch_year>.+), Level-up (true|false):$")
+RE_CALCY_IV = re.compile(r"^.\/MainService\(\s*\d+\): Received values: Id: -{0,1}\d+ {0,1}\({0,1}(?P<name>[^\(\)]+){0,1}\){0,1}, Nr: (?P<id>-{0,1}\d+), CP: (?P<cp>-{0,1}\d+), Max HP: (?P<max_hp>-{0,1}\d+), Dust cost: (?P<dust_cost>-{0,1}\d+), Level: (?P<level>\-{0,1}[\d\.]+), FastMove (?P<fast_move>.+), SpecialMove (?P<special_move>.+), SpecialMove2 (?P<special_move2>.+),Gender (?P<gender>\-{0,1}\d+), catchYear (?P<catch_year>.+), Level-up (true|false):$")
 RE_RED_BAR = re.compile(r"^.+\(\s*\d+\): Screenshot #\d has red error box at the top of the screen$")
 RE_SUCCESS = re.compile(r"^.+\(\s*\d+\): calculateScanOutputData finished after \d+ms$")
 RE_SCAN_INVALID = re.compile(r"^.+\(\s*\d+\): Scan invalid .+$")
+RE_SCAN_TOO_SOON = re.compile(r"^.+\(\s*\d+\): Detected power-up screen$")
 
 NAME_MAX_LEN = 12
 
@@ -77,7 +78,7 @@ def bool_filter(c):
     return False
 
 CALCY_VARIABLES = [
-    ['catch_year', int_filter],
+    ['catch_year', None],
     ['lucky', bool_filter],
     ['attack', int_filter],
     ['defense', int_filter],
@@ -98,6 +99,7 @@ CALCY_VARIABLES = [
 CALCY_SUCCESS = 0
 CALCY_RED_BAR = 1
 CALCY_SCAN_INVALID = 2
+CALCY_SCAN_TOO_SOON = 3
 
 class Loader(yaml.SafeLoader):
 
@@ -169,11 +171,22 @@ class Main:
             blacklist = False
             state, values = await self.check_pokemon()
 
-            if values["name"] in self.config["blacklist"]:
+
+            if values and values["name"] in self.config["blacklist"]:
                 blacklist = True
             elif state == CALCY_SUCCESS:
                 num_errors = 0
             elif state == CALCY_RED_BAR:
+                continue
+            elif state == CALCY_SCAN_TOO_SOON:
+                num_errors += 1  # uses the same variable as CALCY_SCAN_INVALID, as they'll never happen simultaneously
+                if num_errors < args.max_retries:
+                    logger.warning("Waiting three seconds and trying again (attempt #%s)", num_errors)
+                    await asyncio.sleep(3)
+                    continue
+                logger.warning("Failed %s times in a row, trying to close a potencially stuck rename dialog...", num_errors)
+                num_errors = 0
+                await self.tap('rename_ok')
                 continue
             elif state == CALCY_SCAN_INVALID:
                 num_errors += 1
@@ -371,6 +384,7 @@ class Main:
         red_bar = False
         values = {}
         while True:
+            # TODO: This block's logic is not trivial, maybe a refactoring would help
             line = await self.p.read_logcat()
             logger.debug("logcat line received: %s", line)
             match = RE_CALCY_IV.match(line)
@@ -378,8 +392,11 @@ class Main:
                 logger.debug("RE_CALCY_IV matched")
                 values = match.groupdict()
                 state = CALCY_SUCCESS
-                if values['cp'] == '-1' or values['level'] == '-1.0':
-                    pass
+                if values["name"] == 'err':
+                    logger.error("Got 'err' as name, we're probably going too fast. If you get this error often, try raising 'waits -> rename_ok' in config.yaml")
+                    return CALCY_SCAN_TOO_SOON, values
+                elif values["cp"] == "-1" or values["level"] == "-1.0":
+                    logger.error("Couldnt detect CP (got %s) or arc-level (got %s)", values["cp"], values["level"])
                 elif red_bar is True:
                     state = CALCY_RED_BAR
                     return state, values
@@ -400,9 +417,14 @@ class Main:
                 if red_bar:
                     logger.debug("RE_SCAN_INVALID matched and red_bar is True")
                     return CALCY_RED_BAR, values
-                else:
-                    logger.debug("RE_SCAN_INVALID matched, raising CalcyIVError")
-                    return CALCY_SCAN_INVALID, values
+                logger.error("RE_SCAN_INVALID matched, raising CalcyIVError")
+                return CALCY_SCAN_INVALID, values
+
+            match = RE_SCAN_TOO_SOON.match(line)
+            if match:
+                values = None
+                logger.error("RE_SCAN_TOO_SOON matched, we're probably going too fast. If you get this error often, try raising 'waits -> rename_ok' in config.yaml")
+                return CALCY_SCAN_TOO_SOON, values
 
 
 if __name__ == '__main__':
