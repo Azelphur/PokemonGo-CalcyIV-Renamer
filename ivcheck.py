@@ -47,7 +47,7 @@ NUMBER_SETS = [
     [chr(9471)] + [chr(i) for i in range(10102, 10112)] + [chr(i) for i in range(9451, 9461)],  # blank circled digits "⓿"
     [chr(8304)] + [chr(185)] + [chr(178)] + [chr(179)] + [chr(i) for i in range(8308, 8314)],  # superscripted digits: "    "
     [chr(i) for i in range(8320, 8329)],  # subscripted digits: "₁"
-    [chr(i) for i in range(48, 57)] + [chr(i) for i in range(65, 70)]  # hexadecimal *digits* (yes, they are digits.)
+    [chr(i) for i in range(48, 58)] + [chr(i) for i in range(65, 71)]  # hexadecimal *digits* (yes, they are digits.)
 ]
 
 CALCY_STRING = '\xa0'*NAME_MAX_LEN + '$CatchDate$|$Lucky$|$ATT$|$DEF$|$HP$|$Gender$|$Trade$|$IV%Min$|$IV%Max$|$AttIV$|$DefIV$|$HpIV$|$FaMove$|$SpMove$|$Appraised$|$Legacy$'
