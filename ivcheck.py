@@ -196,7 +196,7 @@ class Main:
 
             values["success"] = True if state == CALCY_SUCCESS and blacklist is False else False
             values["blacklist"] = blacklist
-            values["appraised"] = False
+            values["appraised"] = True if values["appraised"] is True else False
             actions = await self.get_actions(values)
             if "appraise" in actions:
                 await self.tap("pokemon_menu_button")
