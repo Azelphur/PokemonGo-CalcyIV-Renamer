@@ -43,10 +43,10 @@ RE_SCAN_TOO_SOON = re.compile(r"^.+\(\s*\d+\): Detected power-up screen$")
 NAME_MAX_LEN = 12
 
 NUMBER_SETS = [
-    [chr(9450)] + [chr(i) for i in range(9312, 9332)] + [chr(i) for i in range(12881, 12896)] + [chr(i) for i in range(12977, 12992)],  # white circled digits "⓪"
-    [chr(9471)] + [chr(i) for i in range(10102, 10112)] + [chr(i) for i in range(9451, 9461)],  # blank circled digits "⓿"
-    [chr(8304)] + [chr(185)] + [chr(178)] + [chr(179)] + [chr(i) for i in range(8308, 8314)],  # superscripted digits: "    "
-    [chr(i) for i in range(8320, 8329)],  # subscripted digits: "₁"
+    [chr(9450)] + [chr(i) for i in range(9312, 9332)] + [chr(i) for i in range(12881, 12896)] + [chr(i) for i in range(12977, 12992)],  # white circled digits
+    [chr(9471)] + [chr(i) for i in range(10102, 10112)] + [chr(i) for i in range(9451, 9461)],  # blank circled digits
+    [chr(8304)] + [chr(185)] + [chr(178)] + [chr(179)] + [chr(i) for i in range(8308, 8314)],  # superscripted digits
+    [chr(i) for i in range(8320, 8329)],  # subscripted digits: "???"
     [chr(i) for i in range(48, 58)] + [chr(i) for i in range(65, 71)]  # hexadecimal *digits* (yes, they are digits.)
 ]
 
@@ -195,9 +195,9 @@ class Main:
                     continue
                 num_errors = 0
 
-            values["success"] = True if state == CALCY_SUCCESS and blacklist is False else False
+            values["success"] = True if state == CALCY_SUCCESS else False
             values["blacklist"] = blacklist
-            values["appraised"] = True if values["appraised"] is True else False
+            values["appraised"] = True if values.get("appraised", False) is True else False
             actions = await self.get_actions(values)
             if "appraise" in actions:
                 await self.tap("pokemon_menu_button")
@@ -289,11 +289,11 @@ class Main:
         yellow pixels, and returns True if more than
         40% of the pixels are indeed yellow. Also, if
         the first check results in 0%, it checks twice,
-        in case some pokémon might have covered the
+        in case some pok??mon might have covered the
         favorite button.
 
         Returns:
-            bool -- True if pokémon was already favorited, False otherwise
+            bool -- True if pok??mon was already favorited, False otherwise
         """
 
         ratio = None
