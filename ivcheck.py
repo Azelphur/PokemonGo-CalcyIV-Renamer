@@ -34,7 +34,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-RE_CALCY_IV = re.compile(r"^.\/MainService\(\s*\d+\): Received values: Id: -{0,1}\d+ {0,1}\({0,1}(?P<name>[^\(\)]+){0,1}\){0,1}, Nr: (?P<id>-{0,1}\d+), CP: (?P<cp>-{0,1}\d+), Max HP: (?P<max_hp>-{0,1}\d+), Dust cost: (?P<dust_cost>-{0,1}\d+), Level: (?P<level>\-{0,1}[\d\.]+), FastMove (?P<fast_move>.+), SpecialMove (?P<special_move>.+), SpecialMove2 (?P<special_move2>.+),Gender (?P<gender>\-{0,1}\d+), catchYear (?P<catch_year>.+), Level-up (true|false):$")
+RE_CALCY_IV = re.compile(r"^.\/MainService\(\s*\d+\): Received values: Id: -{0,1}\d+ {0,1}\({0,1}(?P<name>[^\(\)]+){0,1}\){0,1}, Nr: (?P<id>-{0,1}\d+), CP: (?P<cp>-{0,1}\d+), Max HP: (?P<max_hp>-{0,1}\d+), Dust cost: (?P<dust_cost>-{0,1}\d+), Level: (?P<level>\-{0,1}[\d\.]+), FastMove (?P<fast_move>.+), SpecialMove (?P<special_move>.+), SpecialMove2 (?P<special_move2>.+),Gender (?P<gender>\-{0,1}\d+), CatchYear (?P<catch_year>.+), Favorite: (?P<favorite>\d), Level-up (true|false):$")
 RE_RED_BAR = re.compile(r"^.+\(\s*\d+\): Screenshot #\d has red error box at the top of the screen$")
 RE_SUCCESS = re.compile(r"^.+\(\s*\d+\): calculateScanOutputData finished after \d+ms$")
 RE_SCAN_INVALID = re.compile(r"^.+\(\s*\d+\): Scan invalid .+$")
@@ -250,6 +250,7 @@ class Main:
         except ValueError:
             logger.error('Received clipboard data that does not contain 12 non-breaking spaces, did you run --copy-calcy and paste onto the end of your calcy rename settings? Clipboard data follows')
             logger.error(repr(clipboard))
+            print(repr(clipboard))
             raise
         data = data.split('|')
         values = {}
