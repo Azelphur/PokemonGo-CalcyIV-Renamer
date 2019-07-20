@@ -202,18 +202,15 @@ class Main:
             if "appraise" in actions:
                 await self.tap("pokemon_menu_button")
                 await self.tap("appraise_button")
+                await self.tap("continue_appraisal")
                 await self.p.send_intent("tesmath.calcy.ACTION_ANALYZE_SCREEN", "tesmath.calcy/.IntentReceiver", [["silentMode", True]])
-                for _ in range(0, 4):  # we can do it four times before beggining to screencap
-                    await self.tap("continue_appraisal")
-                while await self.check_appraising():
-                    await self.tap("continue_appraisal")
-                await self.tap("calcy_appraisal_save_button")
+                await self.tap("dismiss_calcy")
+                await self.tap("continue_appraisal")
                 values["appraised"] = True
                 clipboard, clipboard_values = await self.get_data_from_clipboard()
                 values = {**values, **clipboard_values}
                 values["calcy"] = clipboard
                 actions = await self.get_actions(values)
-                await self.tap("dismiss_calcy")
 
             if "rename" in actions or "rename-calcy" in actions:
                 if values["success"] is False:
