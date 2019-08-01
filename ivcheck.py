@@ -78,6 +78,11 @@ def bool_filter(c):
         return True
     return False
 
+def appraise_filter(c):
+    if c == chr(167):
+        return True
+    return False
+
 CALCY_VARIABLES = [
     ['catch_year', None],
     ['lucky', bool_filter],
@@ -93,7 +98,7 @@ CALCY_VARIABLES = [
     ['hp_iv', int_filter],
     ['fast_move', None],
     ['charge_move', None],
-    ['appraised', bool_filter],
+    ['appraised', appraise_filter],
     ['legacy', bool_filter],
 ]
 
