@@ -112,7 +112,7 @@ class PokemonGo(object):
     async def send_intent(self, intent, package=None, extra_values=[]):
         cmd = "am broadcast -a {}".format(intent)
         if package:
-            cmd = cmd + " -n {}".format(package)
+            cmd = cmd + " -p {}".format(package)
         for key, value in extra_values:
             if isinstance(value, bool):
                 cmd = cmd + " --ez {} {}".format(key, "true" if value else "false")
