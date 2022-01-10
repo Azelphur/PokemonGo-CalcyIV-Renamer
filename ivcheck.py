@@ -223,14 +223,23 @@ class Main:
                 await self.tap('rename')
 
                 if actions.get("rename", "{calcy}") != "{calcy}": # Don't bother setting clipboard if we don't need to change it
-                    await self.p.send_intent("clipper.set", extra_values=[["text", actions["rename"].format(**values)]])
+                    final_name = actions["rename"].format(**values)
+                    final_name_true_size = len(final_name.encode('utf-8')) / 2
+                    if final_name_true_size > 12:
+                        logger.error("Final string '%s' total real size is too big: %s chars long.", final_name, final_name_true_size)
+                        logger.error("Resetting pokemon name with prefix, otherwise we'd get stuck! Other actions will still apply.")
+                        # TODO: maybe strip spaces or characters beginning at the end until len <= 12
+                        await self.p.send_intent("clipper.set", extra_values=[["text", '! LENGTH']])
+                    else:
+                        logger.debug('Final string \'%s\' total real size: %s chars long.', final_name, final_name_true_size)
+                        await self.p.send_intent("clipper.set", extra_values=[["text", final_name]])
+
 
                 if args.touch_paste:
                     await self.swipe('edit_box', 600)
                     await self.tap('paste')
                 else:
                     await self.p.key('KEYCODE_PASTE')  # Paste into rename
-                # await self.tap('keyboard_ok')  # Instead of yet another tap, use keyevents for reliability
                 await self.p.key('KEYCODE_TAB')
                 await self.p.key('KEYCODE_ENTER')
                 await self.tap('rename_ok')
