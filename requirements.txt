@@ -1,2 +1,2 @@
-Pillow==5.3.0
+Pillow==9.0.1
 PyYAML==4.2b4
